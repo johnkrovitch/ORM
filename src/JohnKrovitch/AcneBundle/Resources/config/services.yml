@@ -1,0 +1,7 @@
+parameters:
+#    john_krovitch_acne.example.class: JohnKrovitch\AcneBundle\Example
+
+services:
+#    john_krovitch_acne.example:
+#        class: %john_krovitch_acne.example.class%
+#        arguments: [@service_id, "plain_value", %parameter%]

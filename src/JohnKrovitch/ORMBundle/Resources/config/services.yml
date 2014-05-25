@@ -1,0 +1,8 @@
+parameters:
+    orm.database.schema_loader: JohnKrovitch\ORMBundle\Database\Schema\SchemaLoader
+
+services:
+    orm.database.schema_loader:
+        class: %orm.database.schema_loader%
+        arguments: []
+
