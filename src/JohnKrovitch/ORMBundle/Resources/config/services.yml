@@ -1,8 +1,16 @@
 parameters:
     orm.database.schema_loader: JohnKrovitch\ORMBundle\Database\Schema\SchemaLoader
+    orm.database: JohnKrovitch\ORMBundle\Database\Database
+    orm.database.connection: JohnKrovitch\ORMBundle\Database\Connection\Connection
 
 services:
+    orm.database:
+        class: %orm.database%
+
     orm.database.schema_loader:
         class: %orm.database.schema_loader%
-        arguments: []
+        calls:
+            - [setContainer, [@service_container]]
 
+    orm.database.connection:
+        class: %orm.database.connection%

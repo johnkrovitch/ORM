@@ -2,7 +2,27 @@
 
 namespace JohnKrovitch\ORMBundle\Database\Connection;
 
-class Driver
+interface Driver
 {
+    /**
+     * Read data from source
+     *
+     * @return mixed
+     */
+    public function read();
 
+    /**
+     * Write data into source
+     *
+     * @return mixed
+     */
+    public function write();
+
+    /**
+     * Set driver source
+     *
+     * @param $source
+     * @return mixed
+     */
+    public function setSource($source);
 }

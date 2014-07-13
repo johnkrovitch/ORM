@@ -1,16 +1,8 @@
-database:
-    name: acne_test
-    driver: %database_driver%
-    host: %database_host%
-    port: %database_port%
-    name: %database_name%
-    user: %database_user%
-    password: %database_password%
-
-    tables:
-        Product:
-            id:        {type: id}
-            name:      {type: string}
-            reference: {type: string, behaviors: {unique}}
-            behaviors:
-                - timestampable
+tables:
+    Product:
+        id:          {type: id}
+        name:        {type: string}
+        description: {type: text}
+        reference:   {type: string, behaviors: [unique]}
+        behaviors:
+            - timestampable
