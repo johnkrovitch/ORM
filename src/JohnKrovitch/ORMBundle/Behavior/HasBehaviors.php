@@ -1,6 +1,6 @@
 <?php
 
-namespace JohnKrovitch\ORMBundle\Database\Behavior;
+namespace JohnKrovitch\ORMBundle\Behavior;
 
 trait HasBehaviors
 {

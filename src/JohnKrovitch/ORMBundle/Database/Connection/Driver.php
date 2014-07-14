@@ -5,6 +5,13 @@ namespace JohnKrovitch\ORMBundle\Database\Connection;
 interface Driver
 {
     /**
+     * Connect source
+     *
+     * @return mixed
+     */
+    public function connect();
+
+    /**
      * Read data from source
      *
      * @return mixed
@@ -25,4 +32,11 @@ interface Driver
      * @return mixed
      */
     public function setSource($source);
+
+    /**
+     * Return driver source type
+     *
+     * @return mixed
+     */
+    public function getType();
 }

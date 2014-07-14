@@ -1,16 +1,26 @@
 parameters:
-    orm.database.schema_loader: JohnKrovitch\ORMBundle\Database\Schema\SchemaLoader
+    # database
     orm.database: JohnKrovitch\ORMBundle\Database\Database
-    orm.database.connection: JohnKrovitch\ORMBundle\Database\Connection\Connection
+    # orm managers
+    orm.manager.schema: JohnKrovitch\ORMBundle\Manager\SchemaManager
+    orm.manager.source: JohnKrovitch\ORMBundle\Manager\SourceManager
+    orm.manager.driver: JohnKrovitch\ORMBundle\Manager\DriverManager
 
 services:
+    # database
     orm.database:
         class: %orm.database%
 
-    orm.database.schema_loader:
-        class: %orm.database.schema_loader%
+
+    # managers
+    orm.manager.schema:
+        class: %orm.manager.schema%
         calls:
             - [setContainer, [@service_container]]
+            - [setSourceManager, [@orm.manager.source]]
 
-    orm.database.connection:
-        class: %orm.database.connection%
+    orm.manager.source:
+        class: %orm.manager.source%
+
+    orm.manager.driver:
+        class: %orm.manager.driver%

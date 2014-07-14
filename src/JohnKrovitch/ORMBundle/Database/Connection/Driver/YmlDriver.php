@@ -16,15 +16,25 @@ class YmlDriver implements Driver
      */
     protected $source;
 
+    /**
+     * Connect source
+     *
+     * @return mixed
+     */
+    public function connect()
+    {
+        // TODO: Implement connect() method.
+    }
+
     public function read()
     {
         $fileSystem = new Filesystem();
         $parser = new Parser();
 
-        if (!$fileSystem->exists($this->source->getLocation())) {
+        if (!$fileSystem->exists($this->source->getHost())) {
             throw new Exception('Invalid yml source file location');
         }
-        $yaml = $parser->parse(file_get_contents($this->source->getLocation()));
+        $yaml = $parser->parse(file_get_contents($this->source->getHost()));
 
         return $yaml;
     }
@@ -42,4 +52,9 @@ class YmlDriver implements Driver
         }
         $this->source = $source;
     }
-} 
+
+    public function getType()
+    {
+        return $this->source->getType();
+    }
+}

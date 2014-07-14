@@ -2,7 +2,7 @@
 
 namespace JohnKrovitch\ORMBundle\Database\Schema;
 
-use JohnKrovitch\ORMBundle\Database\Behavior\HasName;
+use JohnKrovitch\ORMBundle\Behavior\HasName;
 
 class Table
 {

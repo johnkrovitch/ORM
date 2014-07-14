@@ -2,9 +2,9 @@
 
 namespace JohnKrovitch\ORMBundle\Database\Schema;
 
-use JohnKrovitch\ORMBundle\Database\Behavior\HasBehaviors;
-use JohnKrovitch\ORMBundle\Database\Behavior\HasName;
-use JohnKrovitch\ORMBundle\Database\Behavior\HasType;
+use JohnKrovitch\ORMBundle\Behavior\HasBehaviors;
+use JohnKrovitch\ORMBundle\Behavior\HasName;
+use JohnKrovitch\ORMBundle\Behavior\HasType;
 
 class Column
 {

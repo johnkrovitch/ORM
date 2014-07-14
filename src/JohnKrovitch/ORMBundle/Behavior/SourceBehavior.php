@@ -1,14 +1,16 @@
 <?php
 
-namespace JohnKrovitch\ORMBundle\Database\Connection;
+namespace JohnKrovitch\ORMBundle\Behavior;
 
-use JohnKrovitch\ORMBundle\Database\Behavior\HasDriver;
+use Exception;
+use JohnKrovitch\ORMBundle\Behavior\HasDriver;
+use JohnKrovitch\ORMBundle\Behavior\HasName;
+use JohnKrovitch\ORMBundle\Database\Connection\Source;
+use JohnKrovitch\ORMBundle\Database\Constants;
 
-class Connection
+trait SourceBehavior
 {
-    use HasDriver;
-
-    protected $name;
+    use HasDriver, HasName;
 
     protected $login;
 
@@ -18,6 +20,15 @@ class Connection
 
     protected $port;
 
+    /**
+     * Defines connection parameters
+     *
+     * @param $host
+     * @param $name
+     * @param null $login
+     * @param null $password
+     * @param null $port
+     */
     public function setParameters($host, $name, $login = null, $password = null, $port = null)
     {
         $this->host = $host;
@@ -27,20 +38,20 @@ class Connection
         $this->port = $port;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getName()
+    protected function checkParameters()
     {
-        return $this->name;
-    }
-
-    /**
-     * @param mixed $name
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
+        if (!$this->host) {
+            throw new Exception('Invalid host name');
+        }
+        if (!$this->name) {
+            $this->name = uniqid('orm.connection.');
+        }
+        if (!$this->port) {
+            // set mysql default port
+            if ($this->getDriver()->getType() == Constants::DRIVER_TYPE_PDO_MYSQL) {
+                $this->port = '3306';
+            }
+        }
     }
 
     /**
@@ -106,4 +117,4 @@ class Connection
     {
         return $this->port;
     }
-}
+} 

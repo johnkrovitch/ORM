@@ -1,6 +1,6 @@
 <?php
 
-namespace JohnKrovitch\ORMBundle\Database\Behavior;
+namespace JohnKrovitch\ORMBundle\Behavior;
 
 use JohnKrovitch\ORMBundle\Database\Connection\Driver;
 use Symfony\Component\DependencyInjection\Container;

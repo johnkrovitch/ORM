@@ -1,7 +1,7 @@
 <?php
 
 
-namespace JohnKrovitch\ORMBundle\Database\Behavior;
+namespace JohnKrovitch\ORMBundle\Behavior;
 
 
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;

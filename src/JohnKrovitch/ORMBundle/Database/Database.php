@@ -3,17 +3,21 @@
 namespace JohnKrovitch\ORMBundle\Database;
 
 use Exception;
-use JohnKrovitch\ORMBundle\Database\Connection\Connection;
+use JohnKrovitch\ORMBundle\Behavior\HasSource;
 use JohnKrovitch\ORMBundle\Database\Connection\Driver\MysqlDriver;
 
 class Database
 {
-    /**
-     * @var Connection
-     */
-    protected $connection;
+    use HasSource;
 
-    public function init($databaseDriver)
+    protected $schema;
+
+    public function connect()
+    {
+        $this->source->connect();
+    }
+
+    public function createDriver($databaseDriver)
     {
         if ($databaseDriver == Constants::DRIVER_TYPE_PDO_MYSQL) {
             // mysql database driver
@@ -22,21 +26,5 @@ class Database
         } else {
             throw new Exception('Invalid database driver type : ' . $databaseDriver);
         }
-    }
-
-    /**
-     * @return \JohnKrovitch\ORMBundle\Database\Connection\Connection
-     */
-    public function getConnection()
-    {
-        return $this->connection;
-    }
-
-    /**
-     * @param \JohnKrovitch\ORMBundle\Database\Connection\Connection $connection
-     */
-    public function setConnection($connection)
-    {
-        $this->connection = $connection;
     }
 }

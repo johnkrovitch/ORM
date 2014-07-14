@@ -29,7 +29,7 @@ class YmlSource implements Source
         return $this->type;
     }
 
-    public function getLocation()
+    public function getHost()
     {
         return $this->location;
     }
@@ -42,5 +42,10 @@ class YmlSource implements Source
     public function getPassword()
     {
         // TODO: Implement getPassword() method.
+    }
+
+    public function getPort()
+    {
+        // TODO: Implement getPort() method.
     }
 }

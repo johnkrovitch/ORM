@@ -2,18 +2,23 @@
 
 namespace JohnKrovitch\ORMBundle\Database\Connection;
 
+/**
+ * Interface Source
+ * @package JohnKrovitch\ORMBundle\Database\Connection
+ *
+ * A source is a container of parameters used by the driver when it try to access to database
+ */
 interface Source
 {
-    const TYPE_FILE = 'SOURCE_TYPE_FILE';
-    const TYPE_DATABASE = 'SOURCE_TYPE_DATABASE';
+    public function getHost();
+
+    public function getPort();
 
     public function getName();
-
-    public function getType();
-
-    public function getLocation();
 
     public function getLogin();
 
     public function getPassword();
+
+    public function getType();
 }
