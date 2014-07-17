@@ -40,16 +40,18 @@ class SyncCommand extends ContainerAwareCommand
         /** @var SchemaManager $schemaManager */
         $schemaManager = $this->get('orm.manager.schema');
 
-        // creating sources from options
+        // creating origin sources from options
         $this->writeInfo($output, $this->ormConsoleMarkup, ' Loading sources...');
         $sources = $sourceManager->createSourcesFromOptions($input->getOptions());
+        $destinationSources = $sourceManager->createSourcesFromOptions($this->getDatabaseParameters());
 
-        // creating driver according to source type
+        // creating origin driver according to source type
         $this->writeInfo($output, $this->ormConsoleMarkup, ' Loading drivers...');
         $drivers = $driverManager->createDriversFromSources($sources);
+        $destinationDrivers = $driverManager->createDriversFromSources($destinationSources);
 
         // loading drivers into schema manager
-        $schemaManager->setDrivers($drivers);
+        $schemaManager->setDrivers($drivers, $destinationDrivers);
 
         // loading schema into objects
         $this->writeInfo($output, $this->ormConsoleMarkup, ' Loading schema...');
@@ -60,5 +62,31 @@ class SyncCommand extends ContainerAwareCommand
         $schemaManager->synchronize();
 
         $output->writeln($this->getMemoryUsage());
+    }
+
+    /**
+     * Return data for database connection from parameters.yml
+     *
+     * @return array
+     */
+    public function getDatabaseParameters()
+    {
+        $host = $this->getContainer()->getParameter('database_host');
+        $databaseDriver = $this->getContainer()->getParameter('database_driver');
+        $name = $this->getContainer()->getParameter('database_name');
+        $port = $this->getContainer()->getParameter('database_port');
+        $login = $this->getContainer()->getParameter('database_user');
+        $password = $this->getContainer()->getParameter('database_password');
+
+        return [
+            'type' => $databaseDriver,
+            'MyDatabase' => [
+                'host' => $host,
+                'name' => $name,
+                'login' => $login,
+                'password' => $password,
+                'port' => $port
+            ]
+        ];
     }
 } 

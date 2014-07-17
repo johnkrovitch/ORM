@@ -1,15 +1,21 @@
 {
-    "name": "ORM",
+    "name": "johnkrovitch/ORM",
     "license": "MIT",
-    "type": "project",
+    "type": "symfony-bundle",
     "description": "ORM the ORM",
     "autoload": {
         "psr-0": {
             "": "src/"
         }
     },
+    "authors": [
+        {
+            "name": "JohnKrovitch",
+            "email": "arnaudfrezet@gmail.com"
+        }
+    ],
     "require": {
-        "php": ">=5.3.3",
+        "php": ">=5.4",
         "symfony/symfony": "~2.4",
         "doctrine/orm": "~2.2,>=2.2.3",
         "doctrine/doctrine-bundle": "~1.2",

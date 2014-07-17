@@ -20,5 +20,10 @@ interface Source
 
     public function getPassword();
 
+    /**
+     * Return current source type
+     *
+     * @return mixed
+     */
     public function getType();
 }

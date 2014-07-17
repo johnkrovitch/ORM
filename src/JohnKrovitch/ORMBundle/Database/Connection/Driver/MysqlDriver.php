@@ -56,7 +56,7 @@ class MysqlDriver implements Driver
     {
         // check if source is valid
         if (!($source instanceof MysqlSource)) {
-            throw new Exception('Invalid mysql source' . $source);
+            throw new Exception('Invalid mysql source' . var_dump($source, true));
         }
         $this->source = $source;
     }

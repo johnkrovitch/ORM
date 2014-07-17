@@ -10,6 +10,7 @@ use JohnKrovitch\ORMBundle\Database\Connection\Driver;
 use JohnKrovitch\ORMBundle\Database\Constants;
 use JohnKrovitch\ORMBundle\Database\Database;
 use JohnKrovitch\ORMBundle\Database\Schema\Column;
+use JohnKrovitch\ORMBundle\Database\Schema\Schema;
 use JohnKrovitch\ORMBundle\Database\Schema\Table;
 
 /**
@@ -22,12 +23,24 @@ class SchemaManager
     use HasContainer, HasSourceManager, HasSource;
 
     /**
-     * Arrays of drivers by type
+     * Arrays of drivers by type to access to origin data sources
      *
      * @var array
      */
-    protected $drivers = [];
+    protected $originDrivers = [];
 
+    /**
+     * Arrays of drivers by type to access to destination data sources
+     *
+     * @var array
+     */
+    protected $destinationDrivers = [];
+
+    /**
+     * Current schema
+     *
+     * @var Schema
+     */
     protected $schema = [];
 
     protected $isLoaded = false;
@@ -42,6 +55,7 @@ class SchemaManager
         if (!$this->drivers) {
             throw new Exception('No driver was passed to the schema loader');
         }
+        $this->schema = new Schema();
         /** @var Driver $driver */
         foreach ($this->drivers as $drivers) {
 
@@ -51,6 +65,7 @@ class SchemaManager
                 $this->loadData($data);
             }
         }
+        return $this->schema;
     }
 
     /**
@@ -65,6 +80,12 @@ class SchemaManager
         }
     }
 
+    public function setDrivers(array $originDrivers, array $destinationDrivers)
+    {
+        $this->originDrivers = $originDrivers;
+        $this->destinationDrivers = $destinationDrivers;
+    }
+
     /**
      * Load schema data from source into schema objects Table and Column
      *
@@ -72,25 +93,6 @@ class SchemaManager
      */
     protected function loadData($data)
     {
-        // get parameters from container
-        $host = $this->getContainer()->getParameter('database_host');
-        $databaseDriver = $this->getContainer()->getParameter('database_driver');
-        $name = $this->getContainer()->getParameter('database_name');
-        $port = $this->getContainer()->getParameter('database_port');
-        $login = $this->getContainer()->getParameter('database_user');
-        $password = $this->getContainer()->getParameter('database_password');
-
-        // init destination data source
-        $source = $this->getSourceManager()->createSourcesFromOptions([
-            'type' => $databaseDriver,
-            'host' => $host,
-            'name' => $name,
-            'login' => $login,
-            'password' => $password,
-            'port' => $port
-        ]);
-        $this->setSource($source);
-
         // init database
         $allowedColumnsTypes = Constants::getColumnsAllowedTypes();
 
@@ -113,22 +115,17 @@ class SchemaManager
                 }
                 $table->addColumn($column);
             }
-            $this->schema[] = $table;
+            $this->schema->addTable($table);
         }
         $this->isLoaded = true;
     }
 
-    public function setDrivers(array $drivers)
-    {
-        // TODO move this logic elsewhere
-        foreach ($drivers as $driversByType) {
-            if (!is_array($driversByType)) {
-                throw new Exception('Invalid drivers form schema loader. Drivers should be an array of array of drivers');
-            }
-        }
-        $this->drivers = $drivers;
-    }
-
+    /**
+     * Check data integrity. After calling this method, no more checks are required
+     *
+     * @param $data
+     * @throws \Exception
+     */
     protected function checkData($data)
     {
         if (!$data or !is_array($data)) {

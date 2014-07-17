@@ -21,13 +21,12 @@ class SourceManager
      */
     public function createSourcesFromOptions($options = [])
     {
+        $sources = [];
         // yml by default
         $type = array_key_exists('type', $options) ? $options['type'] : 'yml';
 
         // yml
         if ($type == 'yml') {
-            $sources = [];
-
             // if no option are provided, we try to find schema.yml locations
             if (!array_key_exists('location', $options)) {
                 $sourcePath = realpath(__DIR__ . '/../../');
@@ -46,19 +45,19 @@ class SourceManager
                 throw new Exception('Specified yml files locations is not implemented yet');
             }
         } else if ($type == 'pdo_mysql') {
-
-            if (in_array(['host', 'name', 'port', 'login', 'password'], array_keys($options))) {
-                $host = $options['host'];
-                $name = $options['name'];
-                $port = $options['port'];
-                $login = $options['login'];
-                $password = $options['password'];
-
-            } else {
-                throw new Exception('Invalid Mysql source options');
+            foreach ($options as $optionsForSource) {
+                if (is_array($optionsForSource)) {
+                    $source = new MysqlSource();
+                    $source->setParameters(
+                        $optionsForSource['host'],
+                        $optionsForSource['name'],
+                        $optionsForSource['port'],
+                        $optionsForSource['login'],
+                        $optionsForSource['password']
+                    );
+                    $sources[] = $source;
+                }
             }
-            $source = new MysqlSource();
-            $source->setParameters($host, $name, $port, $login, $password);
         } else {
             throw new Exception('Invalid value for source options : ' . $type);
         }
