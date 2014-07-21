@@ -8,7 +8,7 @@ use JohnKrovitch\ORMBundle\Behavior\HasSource;
 use JohnKrovitch\ORMBundle\Behavior\HasSourceManager;
 use JohnKrovitch\ORMBundle\Database\Connection\Driver;
 use JohnKrovitch\ORMBundle\Database\Constants;
-use JohnKrovitch\ORMBundle\Database\Database;
+use JohnKrovitch\ORMBundle\Database\QueryBuilder;
 use JohnKrovitch\ORMBundle\Database\Schema\Column;
 use JohnKrovitch\ORMBundle\Database\Schema\Schema;
 use JohnKrovitch\ORMBundle\Database\Schema\Table;
@@ -48,23 +48,28 @@ class SchemaManager
     /**
      * Loading schema data into objects
      *
-     * @throws \Exception
+     * @return Schema
+     * @throws Exception
      */
     public function load()
     {
-        if (!$this->drivers) {
-            throw new Exception('No driver was passed to the schema loader');
+        if (!$this->originDrivers) {
+            throw new Exception('No origin driver was passed to the schema loader');
         }
-        $this->schema = new Schema();
-        /** @var Driver $driver */
-        foreach ($this->drivers as $drivers) {
+        $schema = new Schema();
+        $queryBuilder = new QueryBuilder();
+        $queryBuilder->show();
 
+        foreach ($this->originDrivers as $drivers) {
+            /** @var Driver $driver */
             foreach ($drivers as $driver) {
-                $data = $driver->read();
+                $data = $driver->read($queryBuilder->getQuery());
                 $this->checkData($data);
-                $this->loadData($data);
+                $this->loadSchema($data, $schema);
             }
         }
+        $this->schema = $schema;
+
         return $this->schema;
     }
 
@@ -78,8 +83,49 @@ class SchemaManager
         if (!$this->isLoaded) {
             throw new Exception('Schema must be loaded before updated');
         }
+        if (!$this->destinationDrivers) {
+            throw new Exception('Destination drivers for schema loader must be set before synchronizing');
+        }
+        $schema = new Schema();
+        $queryBuilder = new QueryBuilder();
+        $queryBuilder->show();
+
+        // load schema from database destination
+        foreach ($this->destinationDrivers as $drivers) {
+            /** @var Driver $driver */
+            foreach ($drivers as $driver) {
+                $data = $driver->read($queryBuilder->getQuery());
+                $this->checkData($data);
+                $this->loadSchema($data, $schema);
+            }
+        }
+        // compare origin schema and destination schema
     }
 
+    public function compareSchema(Schema $origin, Schema $destination)
+    {
+        $originTables = $origin->getTables();
+        $destinationTables = $destination->getTables();
+        $unmatched = [];
+
+        /** @var Table $originTable */
+        foreach ($originTables as $originTable) {
+            $originColumns = $originTable->getColumns();
+
+            /** @var Table $destinationTable */
+            foreach ($destinationTables as $destinationTable) {
+                $destinationColumns = $destinationTable->getColumns();
+
+            }
+        }
+    }
+
+    /**
+     * Define driver for data sources origin and data source destination
+     *
+     * @param array $originDrivers
+     * @param array $destinationDrivers
+     */
     public function setDrivers(array $originDrivers, array $destinationDrivers)
     {
         $this->originDrivers = $originDrivers;
@@ -90,8 +136,10 @@ class SchemaManager
      * Load schema data from source into schema objects Table and Column
      *
      * @param $data
+     * @param Schema $schema
+     * @return Schema
      */
-    protected function loadData($data)
+    protected function loadSchema($data, Schema $schema)
     {
         // init database
         $allowedColumnsTypes = Constants::getColumnsAllowedTypes();
@@ -115,9 +163,11 @@ class SchemaManager
                 }
                 $table->addColumn($column);
             }
-            $this->schema->addTable($table);
+            $schema->addTable($table);
         }
         $this->isLoaded = true;
+
+        return $schema;
     }
 
     /**

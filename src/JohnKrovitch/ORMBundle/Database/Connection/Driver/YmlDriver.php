@@ -3,14 +3,19 @@
 namespace JohnKrovitch\ORMBundle\Database\Connection\Driver;
 
 use Exception;
+use JohnKrovitch\ORMBundle\Behavior\HasTranslator;
 use JohnKrovitch\ORMBundle\Database\Connection\Driver;
-use JohnKrovitch\ORMBundle\Database\Connection\Source;
 use JohnKrovitch\ORMBundle\Database\Connection\Source\YmlSource;
+use JohnKrovitch\ORMBundle\Database\Connection\Source;
+use JohnKrovitch\ORMBundle\Database\Constants;
+use JohnKrovitch\ORMBundle\Database\Query;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Yaml\Parser;
 
 class YmlDriver implements Driver
 {
+    use HasTranslator;
+
     /**
      * @var Source
      */
@@ -26,8 +31,11 @@ class YmlDriver implements Driver
         // TODO: Implement connect() method.
     }
 
-    public function read()
+    public function read(Query $query)
     {
+        if ($query->getType() != Constants::QUERY_TYPE_SHOW) {
+            throw new Exception('Only SHOW query type is allowed yet for YmlDriver');
+        }
         $fileSystem = new Filesystem();
         $parser = new Parser();
 

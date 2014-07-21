@@ -2,14 +2,14 @@
 
 namespace JohnKrovitch\ORMBundle\Command;
 
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\OutputInterface;
 use JohnKrovitch\ORMBundle\Behavior\CommandBehavior;
 use JohnKrovitch\ORMBundle\Manager\DriverManager;
 use JohnKrovitch\ORMBundle\Manager\SchemaManager;
 use JohnKrovitch\ORMBundle\Manager\SourceManager;
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
 
 
 class SyncCommand extends ContainerAwareCommand
@@ -71,12 +71,13 @@ class SyncCommand extends ContainerAwareCommand
      */
     public function getDatabaseParameters()
     {
-        $host = $this->getContainer()->getParameter('database_host');
-        $databaseDriver = $this->getContainer()->getParameter('database_driver');
-        $name = $this->getContainer()->getParameter('database_name');
-        $port = $this->getContainer()->getParameter('database_port');
-        $login = $this->getContainer()->getParameter('database_user');
-        $password = $this->getContainer()->getParameter('database_password');
+        $database = $this->getContainer()->getParameter('database');
+        $host = $database['host'];
+        $databaseDriver = $database['driver'];
+        $name = $database['name'];
+        $port = $database['port'];
+        $login = $database['host'];
+        $password = $database['password'];
 
         return [
             'type' => $databaseDriver,

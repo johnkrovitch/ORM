@@ -3,12 +3,14 @@
 namespace JohnKrovitch\ORMBundle\Manager;
 
 use Exception;
+use JohnKrovitch\ORMBundle\Behavior\HasContainer;
 use JohnKrovitch\ORMBundle\Database\Connection\Source;
 use JohnKrovitch\ORMBundle\Database\Constants;
-use JohnKrovitch\ORMBundle\Database\Connection\Driver\YmlDriver;
 
 class DriverManager
 {
+    use HasContainer;
+
     /**
      * Create instance drivers according to various sources
      *
@@ -23,12 +25,16 @@ class DriverManager
         /** @var Source $source */
         foreach ($sources as $source) {
             // we create a driver by source type
-            if ($source->getType() == Constants::DATABASE_TYPE_YML) {
-                $driver = new YmlDriver();
-                $driver->setSource($source);
+            if ($source->getType() == Constants::DRIVER_TYPE_YML) {
+                // yml type
+                $driver = $this->getContainer()->get('orm.driver.yml');
+            } else if ($source->getType() == Constants::DRIVER_TYPE_PDO_MYSQL) {
+                // pdo mysql
+                $driver = $this->getContainer()->get('orm.driver.mysql');
             } else {
                 throw new Exception($source->getType() . ' driver is not implemented yet');
             }
+            $driver->setSource($source);
             $drivers[$source->getType()][] = $driver;
         }
         return $drivers;

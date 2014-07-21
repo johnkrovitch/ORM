@@ -14,4 +14,9 @@ class Table
     {
         $this->columns[] = $column;
     }
+
+    public function getColumns()
+    {
+        return $this->columns;
+    }
 } 

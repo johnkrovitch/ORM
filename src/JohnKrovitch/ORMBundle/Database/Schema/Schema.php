@@ -21,4 +21,9 @@ class Schema
     {
         $this->behaviors[] = $behavior;
     }
+
+    public function getTables()
+    {
+        return $this->tables;
+    }
 } 

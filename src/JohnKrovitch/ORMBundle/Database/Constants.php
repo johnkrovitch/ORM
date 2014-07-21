@@ -5,15 +5,25 @@ namespace JohnKrovitch\ORMBundle\Database;
 class Constants
 {
     const DATABASE_TYPE_YML = 'yml';
+
     const DRIVER_TYPE_PDO_MYSQL = 'pdo_mysql';
+    const DRIVER_TYPE_YML = 'yml';
 
     const TYPE_FILE = 'SOURCE_TYPE_FILE';
     const TYPE_DATABASE = 'SOURCE_TYPE_DATABASE';
 
+    // columns types
     const COLUMN_TYPE_STRING = 'string';
     const COLUMN_TYPE_INTEGER = 'integer';
     const COLUMN_TYPE_TEXT = 'text';
     const COLUMN_TYPE_ID = 'id';
+
+    // query types
+    const QUERY_TYPE_SHOW = 'show';
+    const QUERY_TYPE_USE = 'use';
+    const QUERY_TYPE_SELECT = 'select';
+    const QUERY_TYPE_UPDATE = 'update';
+    const QUERY_TYPE_DELETE = 'delete';
 
     public static function getColumnsAllowedTypes()
     {

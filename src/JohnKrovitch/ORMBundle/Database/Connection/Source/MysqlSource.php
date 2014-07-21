@@ -10,11 +10,6 @@ class MysqlSource implements Source
 {
     use SourceBehavior;
 
-    public function connect()
-    {
-        // TODO: Implement connect() method.
-    }
-
     public function getHost()
     {
         // TODO: Implement getHost() method.

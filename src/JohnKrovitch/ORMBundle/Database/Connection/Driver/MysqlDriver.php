@@ -3,20 +3,27 @@
 namespace JohnKrovitch\ORMBundle\Database\Connection\Driver;
 
 use Exception;
+use JohnKrovitch\ORMBundle\Behavior\HasTranslator;
 use JohnKrovitch\ORMBundle\Database\Connection\Driver;
 use JohnKrovitch\ORMBundle\Database\Connection\Source;
 use JohnKrovitch\ORMBundle\Database\Connection\Source\MysqlSource;
-use JohnKrovitch\ORMBundle\Database\Connection\Source\YmlSource;
+use JohnKrovitch\ORMBundle\Database\Constants;
+use JohnKrovitch\ORMBundle\Database\Query;
 use PDO;
-use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Yaml\Parser;
 
 class MysqlDriver implements Driver
 {
+    use HasTranslator;
+
     /**
      * @var Source
      */
     protected $source;
+
+    /**
+     * @var PDO
+     */
+    protected $pdo;
 
     /**
      * Connect source
@@ -37,14 +44,29 @@ class MysqlDriver implements Driver
         $login = $source->getLogin() ? : null;
         $password = $source->getPassword() ? : null;
         $options = [];
+        // connection to database
+        $this->pdo = new PDO($dsn, $login, $password, $options);
 
-
-        $database = new PDO($dsn, $login, $password, $options);
+        // use current database
+        $query = new Query();
+        $query->setType(Constants::QUERY_TYPE_USE);
+        $mysqlQuery = $this->getTranslator()->translate($query);
+        $this->pdo->query($mysqlQuery);
     }
 
-    public function read()
+    public function read(Query $query = null)
     {
-        die('Not implemented yet');
+        // database connection test
+        $this->connect();
+
+        if ($query->getType() == Constants::QUERY_TYPE_SHOW) {
+            $test = $this->getTranslator()->translate($query);
+        } else {
+            throw new Exception($query->getType() . ' query type is not implemented yet for mysql driver');
+        }
+
+
+        die('mysql reading Not implemented yet');
     }
 
     public function write()
@@ -66,7 +88,6 @@ class MysqlDriver implements Driver
         return $this->source;
     }
 
-
     /**
      * Return driver source type
      *
@@ -74,6 +95,6 @@ class MysqlDriver implements Driver
      */
     public function getType()
     {
-        // TODO: Implement getType() method.
+        return Constants::DRIVER_TYPE_PDO_MYSQL;
     }
 }

@@ -2,6 +2,8 @@
 
 namespace JohnKrovitch\ORMBundle\Database\Connection;
 
+use JohnKrovitch\ORMBundle\Database\Query;
+
 interface Driver
 {
     /**
@@ -14,9 +16,10 @@ interface Driver
     /**
      * Read data from source
      *
+     * @param Query $query
      * @return mixed
      */
-    public function read();
+    public function read(Query $query);
 
     /**
      * Write data into source
