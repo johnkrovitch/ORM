@@ -2,11 +2,12 @@
 
 namespace JohnKrovitch\ORMBundle\Database;
 
+use JohnKrovitch\ORMBundle\Behavior\HasParameters;
 use JohnKrovitch\ORMBundle\Behavior\HasType;
 
 class Query
 {
-    use HasType;
+    use HasType, HasParameters;
 
     public function toString()
     {

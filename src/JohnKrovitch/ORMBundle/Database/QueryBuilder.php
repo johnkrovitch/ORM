@@ -11,12 +11,18 @@ class QueryBuilder
      */
     protected $query;
 
-    public function show()
+    public function show($type)
     {
         $this->query = new Query();
         $this->query->setType(Constants::QUERY_TYPE_SHOW);
+        $this->query->addParameter('type', $type);
 
         return $this;
+    }
+
+    public function addParameter($name, $value)
+    {
+        $this->query->addParameter($name, $value);
     }
 
     public function getQuery()

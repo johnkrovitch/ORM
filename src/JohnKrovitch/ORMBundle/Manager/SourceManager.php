@@ -6,8 +6,8 @@ use Exception;
 use JohnKrovitch\ORMBundle\Database\Connection\Source\MysqlSource;
 use JohnKrovitch\ORMBundle\Database\Connection\Source\YmlSource;
 use JohnKrovitch\ORMBundle\Database\Connection\Source;
-use Symfony\Component\Finder\SplFileInfo;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Finder\SplFileInfo;
 
 class SourceManager
 {
@@ -39,7 +39,10 @@ class SourceManager
                     $nameArray = explode('/', $file->getRelativePath());
                     $name = $nameArray[0] . ':Resources:schema.yml';
                     // add one source by yml file
-                    $sources[] = new YmlSource($name, $type, $file->getRealPath());
+                    $source = new YmlSource();
+                    $source->setName($name);
+                    $source->setHost($file->getRealPath());
+                    $sources[] = $source;
                 }
             } else {
                 throw new Exception('Specified yml files locations is not implemented yet');

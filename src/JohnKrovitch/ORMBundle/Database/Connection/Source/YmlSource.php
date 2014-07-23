@@ -2,50 +2,16 @@
 
 namespace JohnKrovitch\ORMBundle\Database\Connection\Source;
 
+use JohnKrovitch\ORMBundle\Behavior\SourceBehavior;
 use JohnKrovitch\ORMBundle\Database\Connection\Source;
+use JohnKrovitch\ORMBundle\Database\Constants;
 
 class YmlSource implements Source
 {
-    protected $name;
-
-    protected $type;
-
-    protected $location;
-
-    public function __construct($name, $type, $location, $login = null, $password = null)
-    {
-        $this->name = $name;
-        $this->type = $type;
-        $this->location = $location;
-    }
-
-    public function getName()
-    {
-        return $this->name;
-    }
+    use SourceBehavior;
 
     public function getType()
     {
-        return $this->type;
-    }
-
-    public function getHost()
-    {
-        return $this->location;
-    }
-
-    public function getLogin()
-    {
-        // TODO: Implement getLogin() method.
-    }
-
-    public function getPassword()
-    {
-        // TODO: Implement getPassword() method.
-    }
-
-    public function getPort()
-    {
-        // TODO: Implement getPort() method.
+        return Constants::DRIVER_TYPE_YML;
     }
 }

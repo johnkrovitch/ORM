@@ -4,7 +4,7 @@ namespace JohnKrovitch\ORMBundle\Behavior;
 
 use Exception;
 
-class HasParameters
+trait HasParameters
 {
     protected $parameters = [];
 

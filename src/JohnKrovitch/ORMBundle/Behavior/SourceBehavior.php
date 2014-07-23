@@ -29,7 +29,7 @@ trait SourceBehavior
      * @param null $password
      * @param null $port
      */
-    public function setParameters($host, $name, $login = null, $password = null, $port = null)
+    public function setParameters($host, $name, $port = null, $login = null, $password = null)
     {
         $this->host = $host;
         $this->name = $name;

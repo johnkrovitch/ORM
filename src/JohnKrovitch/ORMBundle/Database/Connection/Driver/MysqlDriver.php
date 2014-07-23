@@ -45,13 +45,25 @@ class MysqlDriver implements Driver
         $password = $source->getPassword() ? : null;
         $options = [];
         // connection to database
-        $this->pdo = new PDO($dsn, $login, $password, $options);
+        var_dump($source);
+        var_dump($source->getLogin());
+        $this->pdo = new PDO($dsn, $source->getLogin(), $password, $options);
 
         // use current database
         $query = new Query();
         $query->setType(Constants::QUERY_TYPE_USE);
+        $query->addParameter('database', 'PANDA');
         $mysqlQuery = $this->getTranslator()->translate($query);
-        $this->pdo->query($mysqlQuery);
+        $result = $this->pdo->query($mysqlQuery);
+        var_dump($dsn, $login, $password, $options);
+
+        die('lol');
+        var_dump($source);
+        var_dump($mysqlQuery);
+        var_dump($result);
+        var_dump($this->pdo->errorCode());
+        var_dump($this->pdo->errorInfo());
+        die('lol');
     }
 
     public function read(Query $query = null)
@@ -60,7 +72,7 @@ class MysqlDriver implements Driver
         $this->connect();
 
         if ($query->getType() == Constants::QUERY_TYPE_SHOW) {
-            $test = $this->getTranslator()->translate($query);
+            $translatedQuery = $this->getTranslator()->translate($query);
         } else {
             throw new Exception($query->getType() . ' query type is not implemented yet for mysql driver');
         }

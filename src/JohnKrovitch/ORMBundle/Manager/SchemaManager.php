@@ -58,7 +58,7 @@ class SchemaManager
         }
         $schema = new Schema();
         $queryBuilder = new QueryBuilder();
-        $queryBuilder->show();
+        $queryBuilder->show('TABLES');
 
         foreach ($this->originDrivers as $drivers) {
             /** @var Driver $driver */
@@ -88,7 +88,7 @@ class SchemaManager
         }
         $schema = new Schema();
         $queryBuilder = new QueryBuilder();
-        $queryBuilder->show();
+        $queryBuilder->show('TABLES');
 
         // load schema from database destination
         foreach ($this->destinationDrivers as $drivers) {

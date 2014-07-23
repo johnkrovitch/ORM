@@ -8,7 +8,6 @@ use JohnKrovitch\ORMBundle\Manager\SchemaManager;
 use JohnKrovitch\ORMBundle\Manager\SourceManager;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 
@@ -21,7 +20,7 @@ class SyncCommand extends ContainerAwareCommand
         $this
             ->setName('orm:database:sync')
             ->setDescription('Synchronize database from various sources')
-            ->addOption('source', 's', InputOption::VALUE_OPTIONAL, 'Allowed values: yml, database', 'yml')
+            //->addOption('source', 's', InputOption::VALUE_OPTIONAL, 'Allowed values: yml, database', 'yml')
             ->setHelp('Call your network administrator');
     }
 
@@ -42,16 +41,16 @@ class SyncCommand extends ContainerAwareCommand
 
         // creating origin sources from options
         $this->writeInfo($output, $this->ormConsoleMarkup, ' Loading sources...');
-        $sources = $sourceManager->createSourcesFromOptions($input->getOptions());
+        $originDataSources = $sourceManager->createSourcesFromOptions($input->getOptions());
         $destinationSources = $sourceManager->createSourcesFromOptions($this->getDatabaseParameters());
 
         // creating origin driver according to source type
         $this->writeInfo($output, $this->ormConsoleMarkup, ' Loading drivers...');
-        $drivers = $driverManager->createDriversFromSources($sources);
+        $originDrivers = $driverManager->createDriversFromSources($originDataSources);
         $destinationDrivers = $driverManager->createDriversFromSources($destinationSources);
 
         // loading drivers into schema manager
-        $schemaManager->setDrivers($drivers, $destinationDrivers);
+        $schemaManager->setDrivers($originDrivers, $destinationDrivers);
 
         // loading schema into objects
         $this->writeInfo($output, $this->ormConsoleMarkup, ' Loading schema...');
@@ -76,7 +75,7 @@ class SyncCommand extends ContainerAwareCommand
         $databaseDriver = $database['driver'];
         $name = $database['name'];
         $port = $database['port'];
-        $login = $database['host'];
+        $login = $database['login'];
         $password = $database['password'];
 
         return [

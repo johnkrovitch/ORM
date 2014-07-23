@@ -5,8 +5,8 @@ namespace JohnKrovitch\ORMBundle\Database\Connection\Driver;
 use Exception;
 use JohnKrovitch\ORMBundle\Behavior\HasTranslator;
 use JohnKrovitch\ORMBundle\Database\Connection\Driver;
-use JohnKrovitch\ORMBundle\Database\Connection\Source\YmlSource;
 use JohnKrovitch\ORMBundle\Database\Connection\Source;
+use JohnKrovitch\ORMBundle\Database\Connection\Source\YmlSource;
 use JohnKrovitch\ORMBundle\Database\Constants;
 use JohnKrovitch\ORMBundle\Database\Query;
 use Symfony\Component\Filesystem\Filesystem;
@@ -28,7 +28,7 @@ class YmlDriver implements Driver
      */
     public function connect()
     {
-        // TODO: Implement connect() method.
+        die('yml driver connect');
     }
 
     public function read(Query $query)
@@ -40,7 +40,7 @@ class YmlDriver implements Driver
         $parser = new Parser();
 
         if (!$fileSystem->exists($this->source->getHost())) {
-            throw new Exception('Invalid yml source file location');
+            throw new Exception('Invalid yml source file location for source : ' . print_r($this->source, true));
         }
         $yaml = $parser->parse(file_get_contents($this->source->getHost()));
 
