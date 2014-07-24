@@ -20,9 +20,21 @@ class QueryBuilder
         return $this;
     }
 
+    public function create($type, $value)
+    {
+        $this->query = new Query();
+        $this->query->setType(Constants::QUERY_TYPE_CREATE);
+        $this->query->addParameter('type', $type);
+        $this->query->addParameter('value', $value);
+
+        return $this;
+    }
+
     public function addParameter($name, $value)
     {
         $this->query->addParameter($name, $value);
+
+        return $this;
     }
 
     public function getQuery()

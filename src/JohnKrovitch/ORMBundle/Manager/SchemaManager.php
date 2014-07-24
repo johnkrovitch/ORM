@@ -100,6 +100,7 @@ class SchemaManager
             }
         }
         // compare origin schema and destination schema
+        $differential = $this->compareSchema($this->schema, $schema);
     }
 
     public function compareSchema(Schema $origin, Schema $destination)
@@ -115,9 +116,9 @@ class SchemaManager
             /** @var Table $destinationTable */
             foreach ($destinationTables as $destinationTable) {
                 $destinationColumns = $destinationTable->getColumns();
-
             }
         }
+        die('matching in progress');
     }
 
     /**

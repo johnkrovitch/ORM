@@ -19,6 +19,8 @@ class MysqlTranslator implements Translator
             $translatedQuery = $this->translateShow($query);
         } else if ($query->getType() == Constants::QUERY_TYPE_USE) {
             $translatedQuery = $this->translateUse($query);
+        } else if ($query->getType() == Constants::QUERY_TYPE_CREATE) {
+            $translatedQuery = $this->translateCreate($query);
         } else {
             throw new Exception($query->getType() . ' query type is not allowed yet for mysql translator');
         }
@@ -37,6 +39,18 @@ class MysqlTranslator implements Translator
     {
         $templateQuery = 'USE %database_name%;';
         $mysqlQuery = $this->injectParameters($templateQuery, ['database_name'], $query->getParameters());
+
+        return $mysqlQuery;
+    }
+
+    protected function translateCreate(Query $query)
+    {
+        if ($query->getParameter('type') == 'DATABASE') {
+            $templateQuery = 'CREATE %parameter1% IF NOT EXISTS %parameter2%;';
+        } else {
+            throw new Exception('Mysql create of type ' . $query->getParameter('type') . ' is not implement yet');
+        }
+        $mysqlQuery = $this->injectParameters($templateQuery, $query->getParameters());
 
         return $mysqlQuery;
     }

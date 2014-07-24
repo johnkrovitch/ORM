@@ -6,13 +6,20 @@ use Exception;
 use JohnKrovitch\ORMBundle\Behavior\HasLogger;
 use JohnKrovitch\ORMBundle\Behavior\HasTranslator;
 use JohnKrovitch\ORMBundle\Database\Connection\Driver;
-use JohnKrovitch\ORMBundle\Database\Connection\Source\MysqlSource;
+use JohnKrovitch\ORMBundle\Database\Connection\Result\MysqlQueryResult;
 use JohnKrovitch\ORMBundle\Database\Connection\Source;
+use JohnKrovitch\ORMBundle\Database\Connection\Source\MysqlSource;
 use JohnKrovitch\ORMBundle\Database\Constants;
 use JohnKrovitch\ORMBundle\Database\Query;
 use JohnKrovitch\ORMBundle\Database\QueryBuilder;
+use JohnKrovitch\ORMBundle\Database\QueryResult;
 use PDO;
 
+/**
+ * MysqlDriver
+ *
+ * Handle interaction with mysql database
+ */
 class MysqlDriver implements Driver
 {
     use HasTranslator, HasLogger;
@@ -30,55 +37,48 @@ class MysqlDriver implements Driver
     protected $isConnected = false;
 
     /**
-     * Connect source
+     * Connect to mysql database and create it if not exists
      *
+     * @throws \Exception
      * @return mixed
      */
     public function connect()
     {
         $source = $this->getSource();
-        $host = $source->getHost();
-        $database = $source->getName();
-        $port = $source->getPort() ? : null;
-        $dsn = sprintf('mysql:host=%s;', $host);
+        $dsn = sprintf('mysql:host=%s;', $source->getHost());
 
-        if ($port) {
+        // if a port is specified, add it to dsn
+        if ($port = $source->getPort()) {
             $dsn .= ';port=' . $port;
         }
-        $login = $source->getLogin() ? : null;
-        $password = $source->getPassword() ? : null;
         $options = [];
         // connection to database
-        $this->pdo = new PDO($dsn, $source->getLogin(), $password, $options);
+        $this->pdo = new PDO($dsn, $source->getLogin(), $source->getPassword(), $options);
 
-        // show all databases
+        // show all databases to determine if we should create or update database
         $queryBuilder = new QueryBuilder();
         $queryBuilder->show('DATABASES');
-        $result = $this->query($queryBuilder->getQuery());
+        $queryResult = $this->query($queryBuilder->getQuery());
 
-        if (!$result) {
-            die('error');
+        $databases = $queryResult->getResults(Constants::FETCH_TYPE_ARRAY);
+        $shouldCreate = true;
+
+        // TODO move database logic creation elsewhere ?
+        foreach ($databases as $database) {
+            if (array_key_exists('Database', $database) and $database['Database'] == $source->getName()) {
+                // database already exist, we do not need to create it
+                $shouldCreate = false;
+            }
         }
+        if ($shouldCreate) {
+            $queryBuilder = new QueryBuilder();
+            $queryBuilder->create('DATABASE', $source->getName());
+            $queryResult = $this->query($queryBuilder->getQuery());
 
-        var_dump('result', $result);
-        die;
-
-
-        // use current database
-        $query = new Query();
-        $query->setType(Constants::QUERY_TYPE_USE);
-        $query->addParameter('database', 'PANDA');
-        $mysqlQuery = $this->getTranslator()->translate($query);
-        $result = $this->pdo->query($mysqlQuery);
-        var_dump($dsn, $login, $password, $options);
-
-        die('lol');
-        var_dump($source);
-        var_dump($mysqlQuery);
-        var_dump($result);
-        var_dump($this->pdo->errorCode());
-        var_dump($this->pdo->errorInfo());
-        die('lol');
+            if ($queryResult->getCount() !== 1) {
+                throw new Exception('An error has occurred during database creation');
+            }
+        }
     }
 
     public function read(Query $query = null)
@@ -93,7 +93,7 @@ class MysqlDriver implements Driver
         }
 
 
-        die('mysql reading Not implemented yet');
+        die('mysql reading Not implemented yet' . $translatedQuery);
     }
 
     public function write()
@@ -125,12 +125,28 @@ class MysqlDriver implements Driver
         return Constants::DRIVER_TYPE_PDO_MYSQL;
     }
 
+    /**
+     * Execute a query into sql database
+     *
+     * @param Query $query
+     * @return QueryResult
+     * @throws \Exception
+     */
     protected function query(Query $query)
     {
+        // translate into SQL query
         $translatedQuery = $this->getTranslator()->translate($query);
+        // TODO only log in dev mode
         $this->getLogger()->info('>>> ORM query : ' . $translatedQuery);
+        // hydrate result object
         $pdoStatement = $this->pdo->query($translatedQuery);
 
-        return $pdoStatement;
+        if (!$pdoStatement) {
+            $message = 'An error has occurred in query ' . $translatedQuery;
+            $message .= implode($this->pdo->errorInfo(), "\n");
+
+            throw new Exception($message);
+        }
+        return new MysqlQueryResult($pdoStatement);
     }
 }
