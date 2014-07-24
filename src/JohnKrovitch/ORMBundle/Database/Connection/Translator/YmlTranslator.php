@@ -3,6 +3,7 @@
 namespace JohnKrovitch\ORMBundle\Database\Connection\Translator;
 
 use Exception;
+use JohnKrovitch\ORMBundle\Behavior\HasLogger;
 use JohnKrovitch\ORMBundle\Behavior\HasSanitizer;
 use JohnKrovitch\ORMBundle\Database\Connection\Translator;
 use JohnKrovitch\ORMBundle\Database\Constants;

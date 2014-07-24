@@ -3,10 +3,11 @@
 namespace JohnKrovitch\ORMBundle\Database\Connection\Driver;
 
 use Exception;
+use JohnKrovitch\ORMBundle\Behavior\HasLogger;
 use JohnKrovitch\ORMBundle\Behavior\HasTranslator;
 use JohnKrovitch\ORMBundle\Database\Connection\Driver;
-use JohnKrovitch\ORMBundle\Database\Connection\Source;
 use JohnKrovitch\ORMBundle\Database\Connection\Source\YmlSource;
+use JohnKrovitch\ORMBundle\Database\Connection\Source;
 use JohnKrovitch\ORMBundle\Database\Constants;
 use JohnKrovitch\ORMBundle\Database\Query;
 use Symfony\Component\Filesystem\Filesystem;
@@ -14,7 +15,7 @@ use Symfony\Component\Yaml\Parser;
 
 class YmlDriver implements Driver
 {
-    use HasTranslator;
+    use HasTranslator, HasLogger;
 
     /**
      * @var Source

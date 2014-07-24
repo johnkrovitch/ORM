@@ -3,6 +3,7 @@
 namespace JohnKrovitch\ORMBundle\Database\Connection\Translator;
 
 use Exception;
+use JohnKrovitch\ORMBundle\Behavior\HasLogger;
 use JohnKrovitch\ORMBundle\Behavior\HasSanitizer;
 use JohnKrovitch\ORMBundle\Database\Connection\Translator;
 use JohnKrovitch\ORMBundle\Database\Constants;
@@ -26,7 +27,7 @@ class MysqlTranslator implements Translator
 
     protected function translateShow(Query $query)
     {
-        $templateQuery = 'SHOW %parameter1%';
+        $templateQuery = 'SHOW %parameter1%;';
         $mysqlQuery = $this->injectParameters($templateQuery, $query->getParameters());
 
         return $mysqlQuery;
@@ -43,27 +44,20 @@ class MysqlTranslator implements Translator
     protected function injectParameters($queryString, array $parameters)
     {
         $toMatch = [];
+        $queryParameters = [];
         preg_match_all('/%parameter\d%/', $queryString, $toMatch);
 
-        var_dump($toMatch);
-        die;
-
-
-        $names = [];
-        $values = [];
-
-        foreach ($parameters as $name => $parameter) {
-            $values[] = $parameter;
-            $names[] = $name;
+        if (count($toMatch)) {
+            $queryParameters = $toMatch[0];
         }
-        foreach ($para as $index => $name) {
-            if (!array_key_exists($index, $names)) {
-                throw new Exception('No parameters was found, ' . count($toReplace) . ' expected');
+        // loop through query template parameters
+        foreach ($queryParameters as $index => $parameter) {
+
+            if (!count($parameters)) {
+                throw new Exception('Missing parameter ' . $index . ' for query ' . $queryString);
             }
-            if (!array_key_exists($index, $values)) {
-                throw new Exception('Parameter ' . $names[$index] . ' was not present in parameters array');
-            }
-            $queryString = str_replace('%' . $name . '%', $values[$index], $queryString);
+            $replace = array_shift($parameters);
+            $queryString = str_replace('%parameter' . ($index + 1) . '%', $replace, $queryString);
         }
         return $queryString;
     }
