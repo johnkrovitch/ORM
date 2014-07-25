@@ -4,35 +4,37 @@ namespace JohnKrovitch\ORMBundle\Database;
 
 use Exception;
 use JohnKrovitch\ORMBundle\Behavior\Collection;
-use PDOStatement;
 
-abstract class QueryResult implements \Countable, \IteratorAggregate, \ArrayAccess
+
+interface QueryResult extends \Countable, \IteratorAggregate, \ArrayAccess
 {
-    use Collection;
-
-    /**
-     * @var PDOStatement
-     */
-    protected $statement;
-
-    public function __construct(PDOStatement $statement)
-    {
-        $this->statement = $statement;
-    }
-
     /**
      * Return hydrate result from pdo statement
      *
      * @param $hydrationMode
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
-    public abstract function getResults($hydrationMode);
+    public function getResults($hydrationMode);
 
     /**
      * Return affected rows count
      *
      * @return int
      */
-    public abstract function getCount();
+    public function getCount();
+
+    /**
+     * Return true if last query return an error
+     *
+     * @return bool
+     */
+    public function hasErrors();
+
+    /**
+     * Return last query errors if there are
+     *
+     * @return mixed
+     */
+    public function getErrors();
 }

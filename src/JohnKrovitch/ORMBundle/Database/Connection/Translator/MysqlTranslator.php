@@ -9,10 +9,22 @@ use JohnKrovitch\ORMBundle\Database\Connection\Translator;
 use JohnKrovitch\ORMBundle\Database\Constants;
 use JohnKrovitch\ORMBundle\Database\Query;
 
+/***
+ * MysqlTranslator
+ *
+ * Translate Query object into MySql string
+ */
 class MysqlTranslator implements Translator
 {
     use HasSanitizer;
 
+    /**
+     * Translate $query into mysql sanitized query string
+     *
+     * @param Query $query
+     * @return mixed
+     * @throws Exception
+     */
     public function translate(Query $query)
     {
         if ($query->getType() == Constants::QUERY_TYPE_SHOW) {
@@ -37,8 +49,8 @@ class MysqlTranslator implements Translator
 
     protected function translateUse(Query $query)
     {
-        $templateQuery = 'USE %database_name%;';
-        $mysqlQuery = $this->injectParameters($templateQuery, ['database_name'], $query->getParameters());
+        $templateQuery = 'USE %parameter1%;';
+        $mysqlQuery = $this->injectParameters($templateQuery, $query->getParameters());
 
         return $mysqlQuery;
     }

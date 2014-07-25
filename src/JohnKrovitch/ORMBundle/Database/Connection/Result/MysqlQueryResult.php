@@ -3,13 +3,12 @@
 namespace JohnKrovitch\ORMBundle\Database\Connection\Result;
 
 use Exception;
+use JohnKrovitch\ORMBundle\Database\Base\BaseQueryResult;
 use JohnKrovitch\ORMBundle\Database\Constants;
-use JohnKrovitch\ORMBundle\Database\QueryResult;
 use PDO;
 
-class MysqlQueryResult extends QueryResult
+class MysqlQueryResult extends BaseQueryResult
 {
-
     /**
      * Return hydrate result from pdo statement
      *
@@ -29,8 +28,38 @@ class MysqlQueryResult extends QueryResult
         return $results;
     }
 
+    /**
+     * Return mysql query affected row count
+     *
+     * @return int
+     */
     public function getCount()
     {
         return $this->statement->rowCount();
     }
-} 
+
+    /**
+     * Return true if last query return an error
+     *
+     * @return bool
+     */
+    public function hasErrors()
+    {
+        return $this->statement->errorCode() !== PDO::ERR_NONE;
+    }
+
+    /**
+     * Return last query errors if there are
+     *
+     * @return mixed
+     */
+    public function getErrors()
+    {
+        $errorInfo = [];
+
+        if ($this->hasErrors()) {
+            $errorInfo = $this->statement->errorInfo();
+        }
+        return $errorInfo;
+    }
+}

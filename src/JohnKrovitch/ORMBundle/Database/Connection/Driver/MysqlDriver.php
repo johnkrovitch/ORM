@@ -7,8 +7,8 @@ use JohnKrovitch\ORMBundle\Behavior\HasLogger;
 use JohnKrovitch\ORMBundle\Behavior\HasTranslator;
 use JohnKrovitch\ORMBundle\Database\Connection\Driver;
 use JohnKrovitch\ORMBundle\Database\Connection\Result\MysqlQueryResult;
-use JohnKrovitch\ORMBundle\Database\Connection\Source;
 use JohnKrovitch\ORMBundle\Database\Connection\Source\MysqlSource;
+use JohnKrovitch\ORMBundle\Database\Connection\Source;
 use JohnKrovitch\ORMBundle\Database\Constants;
 use JohnKrovitch\ORMBundle\Database\Query;
 use JohnKrovitch\ORMBundle\Database\QueryBuilder;
@@ -79,21 +79,28 @@ class MysqlDriver implements Driver
                 throw new Exception('An error has occurred during database creation');
             }
         }
+        // at this point we are connected
+        $this->isConnected = true;
+        // use current database. current query could not be build with queryBuilder because mysql "USE" notions
+        // should not be related with queryBuilder
+        $query = new Query();
+        $query->setType(Constants::QUERY_TYPE_USE);
+        $query->addParameter('database', $source->getName());
+        // "use" query
+        $this->query($query);
     }
 
     public function read(Query $query = null)
     {
-        // database connection test
-        $this->connect();
-
-        if ($query->getType() == Constants::QUERY_TYPE_SHOW) {
-            $translatedQuery = $this->getTranslator()->translate($query);
-        } else {
-            throw new Exception($query->getType() . ' query type is not implemented yet for mysql driver');
+        if (!$this->isConnected) {
+            // database connection if required
+            $this->connect();
         }
+        // execute query
+        $queryResult = $this->query($query);
 
-
-        die('mysql reading Not implemented yet' . $translatedQuery);
+        var_dump($queryResult);
+        die('mysql reading Not implemented yet');
     }
 
     public function write()
@@ -140,13 +147,14 @@ class MysqlDriver implements Driver
         $this->getLogger()->info('>>> ORM query : ' . $translatedQuery);
         // hydrate result object
         $pdoStatement = $this->pdo->query($translatedQuery);
+        $queryResult = new MysqlQueryResult($pdoStatement);
 
-        if (!$pdoStatement) {
+        if (!$pdoStatement or $queryResult->hasErrors()) {
             $message = 'An error has occurred in query ' . $translatedQuery;
             $message .= implode($this->pdo->errorInfo(), "\n");
 
             throw new Exception($message);
         }
-        return new MysqlQueryResult($pdoStatement);
+        return $queryResult;
     }
 }
