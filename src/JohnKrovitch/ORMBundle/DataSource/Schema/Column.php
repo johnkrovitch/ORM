@@ -1,6 +1,6 @@
 <?php
 
-namespace JohnKrovitch\ORMBundle\Database\Schema;
+namespace JohnKrovitch\ORMBundle\DataSource\Schema;
 
 use JohnKrovitch\ORMBundle\Behavior\HasBehaviors;
 use JohnKrovitch\ORMBundle\Behavior\HasName;

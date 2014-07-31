@@ -1,15 +1,15 @@
 <?php
 
-namespace JohnKrovitch\ORMBundle\Database\Connection\Driver;
+namespace JohnKrovitch\ORMBundle\DataSource\Connection\Driver;
 
 use Exception;
 use JohnKrovitch\ORMBundle\Behavior\HasLogger;
 use JohnKrovitch\ORMBundle\Behavior\HasTranslator;
-use JohnKrovitch\ORMBundle\Database\Connection\Driver;
-use JohnKrovitch\ORMBundle\Database\Connection\Source\YmlSource;
-use JohnKrovitch\ORMBundle\Database\Connection\Source;
-use JohnKrovitch\ORMBundle\Database\Constants;
-use JohnKrovitch\ORMBundle\Database\Query;
+use JohnKrovitch\ORMBundle\DataSource\Connection\Driver;
+use JohnKrovitch\ORMBundle\DataSource\Connection\Source;
+use JohnKrovitch\ORMBundle\DataSource\Connection\Source\YmlSource;
+use JohnKrovitch\ORMBundle\DataSource\Constants;
+use JohnKrovitch\ORMBundle\DataSource\Query;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Yaml\Parser;
 
@@ -32,7 +32,7 @@ class YmlDriver implements Driver
         die('yml driver connect');
     }
 
-    public function read(Query $query)
+    public function query(Query $query)
     {
         if ($query->getType() != Constants::QUERY_TYPE_SHOW) {
             throw new Exception('Only SHOW query type is allowed yet for YmlDriver');
@@ -46,11 +46,6 @@ class YmlDriver implements Driver
         $yaml = $parser->parse(file_get_contents($this->source->getHost()));
 
         return $yaml;
-    }
-
-    public function write()
-    {
-        die('Not implemented yet');
     }
 
     public function setSource($source)

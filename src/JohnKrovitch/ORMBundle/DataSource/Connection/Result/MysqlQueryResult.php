@@ -1,10 +1,10 @@
 <?php
 
-namespace JohnKrovitch\ORMBundle\Database\Connection\Result;
+namespace JohnKrovitch\ORMBundle\DataSource\Connection\Result;
 
 use Exception;
-use JohnKrovitch\ORMBundle\Database\Base\BaseQueryResult;
-use JohnKrovitch\ORMBundle\Database\Constants;
+use JohnKrovitch\ORMBundle\DataSource\Base\BaseQueryResult;
+use JohnKrovitch\ORMBundle\DataSource\Constants;
 use PDO;
 
 class MysqlQueryResult extends BaseQueryResult

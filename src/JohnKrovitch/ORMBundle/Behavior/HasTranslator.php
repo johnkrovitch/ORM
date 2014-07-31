@@ -2,7 +2,7 @@
 
 namespace JohnKrovitch\ORMBundle\Behavior;
 
-use JohnKrovitch\ORMBundle\Database\Connection\Translator;
+use JohnKrovitch\ORMBundle\DataSource\Connection\Translator;
 
 trait HasTranslator
 {

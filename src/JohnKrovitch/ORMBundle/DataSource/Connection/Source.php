@@ -1,10 +1,10 @@
 <?php
 
-namespace JohnKrovitch\ORMBundle\Database\Connection;
+namespace JohnKrovitch\ORMBundle\DataSource\Connection;
 
 /**
  * Interface Source
- * @package JohnKrovitch\ORMBundle\Database\Connection
+ * @package JohnKrovitch\ORMBundle\DataSource\Connection
  *
  * A source is a container of parameters used by the driver when it try to access to database
  */

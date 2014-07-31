@@ -1,6 +1,6 @@
 <?php
 
-namespace JohnKrovitch\ORMBundle\Database\Schema;
+namespace JohnKrovitch\ORMBundle\DataSource\Schema;
 
 /**
  * Schema
@@ -14,7 +14,7 @@ class Schema
 
     public function addTable(Table $table)
     {
-        $this->tables[] = $table;
+        $this->tables[$table->getName()] = $table;
     }
 
     public function addBehavior(Behavior $behavior)

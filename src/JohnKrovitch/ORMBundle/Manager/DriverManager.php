@@ -4,8 +4,8 @@ namespace JohnKrovitch\ORMBundle\Manager;
 
 use Exception;
 use JohnKrovitch\ORMBundle\Behavior\HasContainer;
-use JohnKrovitch\ORMBundle\Database\Connection\Source;
-use JohnKrovitch\ORMBundle\Database\Constants;
+use JohnKrovitch\ORMBundle\DataSource\Connection\Source;
+use JohnKrovitch\ORMBundle\DataSource\Constants;
 
 class DriverManager
 {

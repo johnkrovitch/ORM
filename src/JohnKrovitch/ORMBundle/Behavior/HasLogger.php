@@ -2,7 +2,7 @@
 
 namespace JohnKrovitch\ORMBundle\Behavior;
 
-use JohnKrovitch\ORMBundle\Database\Connection\Driver;
+use JohnKrovitch\ORMBundle\DataSource\Connection\Driver;
 use Monolog\Logger;
 
 trait HasLogger

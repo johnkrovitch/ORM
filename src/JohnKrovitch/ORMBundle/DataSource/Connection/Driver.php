@@ -1,8 +1,8 @@
 <?php
 
-namespace JohnKrovitch\ORMBundle\Database\Connection;
+namespace JohnKrovitch\ORMBundle\DataSource\Connection;
 
-use JohnKrovitch\ORMBundle\Database\Query;
+use JohnKrovitch\ORMBundle\DataSource\Query;
 
 interface Driver
 {
@@ -19,14 +19,7 @@ interface Driver
      * @param Query $query
      * @return mixed
      */
-    public function read(Query $query);
-
-    /**
-     * Write data into source
-     *
-     * @return mixed
-     */
-    public function write();
+    public function query(Query $query);
 
     /**
      * Set driver source

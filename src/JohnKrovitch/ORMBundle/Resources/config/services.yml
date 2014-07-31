@@ -5,12 +5,12 @@ parameters:
     orm.manager.driver: JohnKrovitch\ORMBundle\Manager\DriverManager
 
     # orm drivers
-    orm.driver.mysql:  JohnKrovitch\ORMBundle\Database\Connection\Driver\MysqlDriver
-    orm.driver.yml:    JohnKrovitch\ORMBundle\Database\Connection\Driver\YmlDriver
+    orm.driver.mysql:  JohnKrovitch\ORMBundle\DataSource\Connection\Driver\MysqlDriver
+    orm.driver.yml:    JohnKrovitch\ORMBundle\DataSource\Connection\Driver\YmlDriver
 
     # orm translators
-    orm.translator.mysql: JohnKrovitch\ORMBundle\Database\Connection\Translator\MysqlTranslator
-    orm.translator.yml: JohnKrovitch\ORMBundle\Database\Connection\Translator\YmlTranslator
+    orm.translator.mysql: JohnKrovitch\ORMBundle\DataSource\Connection\Translator\MysqlTranslator
+    orm.translator.yml: JohnKrovitch\ORMBundle\DataSource\Connection\Translator\YmlTranslator
 
     # utils
     orm.utils.sanitizer: JohnKrovitch\ORMBundle\Utils\Sanitizer

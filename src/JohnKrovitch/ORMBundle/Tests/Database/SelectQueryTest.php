@@ -1,6 +1,6 @@
 <?php
 
-namespace JohnKrovitch\ORMBundle\Tests\Database;
+namespace JohnKrovitch\ORMBundle\Tests\DataSource;
 
 class SelectQueryTest
 {

@@ -2,7 +2,7 @@
 
 namespace JohnKrovitch\ORMBundle\Behavior;
 
-use JohnKrovitch\ORMBundle\Database\Connection\Source;
+use JohnKrovitch\ORMBundle\DataSource\Connection\Source;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 

@@ -1,13 +1,13 @@
 <?php
 
-namespace JohnKrovitch\ORMBundle\Database\Connection\Translator;
+namespace JohnKrovitch\ORMBundle\DataSource\Connection\Translator;
 
 use Exception;
 use JohnKrovitch\ORMBundle\Behavior\HasLogger;
 use JohnKrovitch\ORMBundle\Behavior\HasSanitizer;
-use JohnKrovitch\ORMBundle\Database\Connection\Translator;
-use JohnKrovitch\ORMBundle\Database\Constants;
-use JohnKrovitch\ORMBundle\Database\Query;
+use JohnKrovitch\ORMBundle\DataSource\Connection\Translator;
+use JohnKrovitch\ORMBundle\DataSource\Constants;
+use JohnKrovitch\ORMBundle\DataSource\Query;
 
 class YmlTranslator implements Translator
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace JohnKrovitch\ORMBundle\Database;
+namespace JohnKrovitch\ORMBundle\DataSource;
 
 use JohnKrovitch\ORMBundle\Behavior\HasType;
 

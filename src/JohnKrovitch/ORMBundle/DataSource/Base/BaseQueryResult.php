@@ -1,9 +1,9 @@
 <?php
 
-namespace JohnKrovitch\ORMBundle\Database\Base;
+namespace JohnKrovitch\ORMBundle\DataSource\Base;
 
 use JohnKrovitch\ORMBundle\Behavior\Collection;
-use JohnKrovitch\ORMBundle\Database\QueryResult;
+use JohnKrovitch\ORMBundle\DataSource\QueryResult;
 use PDOStatement;
 
 abstract class BaseQueryResult implements QueryResult

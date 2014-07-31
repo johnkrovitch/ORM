@@ -3,9 +3,9 @@
 namespace JohnKrovitch\ORMBundle\Manager;
 
 use Exception;
-use JohnKrovitch\ORMBundle\Database\Connection\Source\MysqlSource;
-use JohnKrovitch\ORMBundle\Database\Connection\Source\YmlSource;
-use JohnKrovitch\ORMBundle\Database\Connection\Source;
+use JohnKrovitch\ORMBundle\DataSource\Connection\Source\MysqlSource;
+use JohnKrovitch\ORMBundle\DataSource\Connection\Source\YmlSource;
+use JohnKrovitch\ORMBundle\DataSource\Connection\Source;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 

@@ -1,10 +1,10 @@
 <?php
 
-namespace JohnKrovitch\ORMBundle\Database\Connection\Source;
+namespace JohnKrovitch\ORMBundle\DataSource\Connection\Source;
 
 use JohnKrovitch\ORMBundle\Behavior\SourceBehavior;
-use JohnKrovitch\ORMBundle\Database\Connection\Source;
-use JohnKrovitch\ORMBundle\Database\Constants;
+use JohnKrovitch\ORMBundle\DataSource\Connection\Source;
+use JohnKrovitch\ORMBundle\DataSource\Constants;
 
 class MysqlSource implements Source
 {

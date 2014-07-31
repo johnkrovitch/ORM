@@ -2,7 +2,7 @@
 
 namespace JohnKrovitch\ORMBundle\Behavior;
 
-use JohnKrovitch\ORMBundle\Database\Connection\Driver;
+use JohnKrovitch\ORMBundle\DataSource\Connection\Driver;
 
 trait HasName
 {
@@ -14,7 +14,7 @@ trait HasName
     /**
      * Return current name
      *
-     * @return Driver
+     * @return string
      */
     public function getName()
     {

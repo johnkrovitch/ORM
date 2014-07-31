@@ -3,15 +3,18 @@
 namespace JohnKrovitch\ORMBundle\Manager;
 
 use Exception;
+use InvalidArgumentException;
 use JohnKrovitch\ORMBundle\Behavior\HasContainer;
 use JohnKrovitch\ORMBundle\Behavior\HasSource;
 use JohnKrovitch\ORMBundle\Behavior\HasSourceManager;
-use JohnKrovitch\ORMBundle\Database\Connection\Driver;
-use JohnKrovitch\ORMBundle\Database\Constants;
-use JohnKrovitch\ORMBundle\Database\QueryBuilder;
-use JohnKrovitch\ORMBundle\Database\Schema\Column;
-use JohnKrovitch\ORMBundle\Database\Schema\Schema;
-use JohnKrovitch\ORMBundle\Database\Schema\Table;
+use JohnKrovitch\ORMBundle\DataSource\Connection\Driver;
+use JohnKrovitch\ORMBundle\DataSource\Constants;
+use JohnKrovitch\ORMBundle\DataSource\QueryBuilder;
+use JohnKrovitch\ORMBundle\DataSource\QueryResult;
+use JohnKrovitch\ORMBundle\DataSource\Schema\Column;
+use JohnKrovitch\ORMBundle\DataSource\Schema\Differential;
+use JohnKrovitch\ORMBundle\DataSource\Schema\Schema;
+use JohnKrovitch\ORMBundle\DataSource\Schema\Table;
 
 /**
  * SchemaLoader
@@ -63,7 +66,7 @@ class SchemaManager
         foreach ($this->originDrivers as $drivers) {
             /** @var Driver $driver */
             foreach ($drivers as $driver) {
-                $data = $driver->read($queryBuilder->getQuery());
+                $data = $driver->query($queryBuilder->getQuery());
                 $this->checkData($data);
                 $this->loadSchema($data, $schema);
             }
@@ -94,31 +97,52 @@ class SchemaManager
         foreach ($this->destinationDrivers as $drivers) {
             /** @var Driver $driver */
             foreach ($drivers as $driver) {
-                $data = $driver->read($queryBuilder->getQuery());
-                $this->checkData($data);
-                $this->loadSchema($data, $schema);
+                $queryResult = $driver->query($queryBuilder->getQuery());
+                $this->checkData($queryResult);
+                $this->loadSchema($queryResult, $schema);
             }
         }
         // compare origin schema and destination schema
         $differential = $this->compareSchema($this->schema, $schema);
+
+
+        print_r($differential);
+
+
+        die('sync in progress');
     }
 
+    /**
+     * Return a differential between two schemas
+     *
+     * @param Schema $origin
+     * @param Schema $destination
+     * @return Differential
+     */
     public function compareSchema(Schema $origin, Schema $destination)
     {
+        $unmatchedOrigin = [];
+        $unmatchedDestination = [];
         $originTables = $origin->getTables();
         $destinationTables = $destination->getTables();
-        $unmatched = [];
+        // compare origin and destination tables
+        $differentialOrigin = array_diff(array_keys($originTables), array_keys($destinationTables));
+        $differentialDestination = array_diff(array_keys($destinationTables), array_keys($originTables));
 
-        /** @var Table $originTable */
-        foreach ($originTables as $originTable) {
-            $originColumns = $originTable->getColumns();
-
-            /** @var Table $destinationTable */
-            foreach ($destinationTables as $destinationTable) {
-                $destinationColumns = $destinationTable->getColumns();
-            }
+        foreach ($differentialOrigin as $tableName) {
+            $unmatchedOrigin[] = $originTables[$tableName];
         }
-        die('matching in progress');
+        foreach ($differentialDestination as $tableName) {
+            $unmatchedDestination[] = $destinationTables[$tableName];
+        }
+        // if two tables have the same name, we compare their columns
+        $commonTables = array_intersect(array_keys($originTables), array_keys($destinationTables));
+
+        foreach ($commonTables as $tableName) {
+            $unmatchedOrigin[] = $originTables[$tableName];
+            $unmatchedDestination[] = $destinationTables[$tableName];
+        }
+        return new Differential($unmatchedOrigin, $unmatchedDestination);
     }
 
     /**
@@ -145,8 +169,14 @@ class SchemaManager
         // init database
         $allowedColumnsTypes = Constants::getColumnsAllowedTypes();
 
+        // TODO always have a query result
+        if ($data instanceof QueryResult) {
+            $tablesData = $data->getResults(Constants::FETCH_TYPE_ARRAY);
+        } else {
+            $tablesData = $data['tables'];
+        }
         // read data, create table and load table into database schema
-        foreach ($data['tables'] as $tableName => $tableData) {
+        foreach ($tablesData as $tableName => $tableData) {
             $table = new Table();
             $table->setName($tableName);
 
@@ -172,18 +202,29 @@ class SchemaManager
     }
 
     /**
-     * Check data integrity. After calling this method, no more checks are required
+     * Check data integrity before loading schema. Ensures that data are valid before the schema is loaded.
+     * After calling this method, no more checks are required
      *
      * @param $data
      * @throws \Exception
      */
     protected function checkData($data)
     {
-        if (!$data or !is_array($data)) {
-            throw new Exception('Trying to load empty or in valid data. expected: array, got: ' . var_dump($data, true));
-        }
-        if (!array_key_exists('tables', $data)) {
-            throw new Exception('Expecting "tables" root node');
+        // TODO always have query result
+        if (is_array($data)) {
+            // array data (generally data from files)
+            if (is_array($data) and !array_key_exists('tables', $data)) {
+                throw new Exception('Expecting "tables" root node, got ' . "\n" . print_r($data, true));
+            }
+        } else if ($data instanceof QueryResult) {
+            // data from query (generally database)
+            $results = $data->getResults(Constants::FETCH_TYPE_ARRAY);
+
+            if (!is_array($results)) {
+                throw new InvalidArgumentException('Invalid data from query result for schema manager');
+            }
+        } else {
+            throw new Exception('Trying to load empty or in valid data. expected: array, got: ' . "\n" . print_r($data, true));
         }
         // TODO check data integrity
     }

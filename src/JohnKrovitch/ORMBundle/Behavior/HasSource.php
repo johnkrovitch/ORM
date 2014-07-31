@@ -2,8 +2,8 @@
 
 namespace JohnKrovitch\ORMBundle\Behavior;
 
-use JohnKrovitch\ORMBundle\Database\Connection\Driver;
-use JohnKrovitch\ORMBundle\Database\Connection\Source;
+use JohnKrovitch\ORMBundle\DataSource\Connection\Driver;
+use JohnKrovitch\ORMBundle\DataSource\Connection\Source;
 
 trait HasSource
 {

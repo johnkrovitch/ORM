@@ -1,6 +1,6 @@
 <?php
 
-namespace JohnKrovitch\ORMBundle\Database;
+namespace JohnKrovitch\ORMBundle\DataSource;
 
 use Exception;
 use JohnKrovitch\ORMBundle\Behavior\Collection;
