@@ -3,11 +3,12 @@
 namespace JohnKrovitch\ORMBundle\DataSource\Connection\Translator;
 
 use Exception;
-use JohnKrovitch\ORMBundle\Behavior\HasLogger;
 use JohnKrovitch\ORMBundle\Behavior\HasSanitizer;
 use JohnKrovitch\ORMBundle\DataSource\Connection\Translator;
 use JohnKrovitch\ORMBundle\DataSource\Constants;
 use JohnKrovitch\ORMBundle\DataSource\Query;
+use JohnKrovitch\ORMBundle\DataSource\Schema\Column;
+use JohnKrovitch\ORMBundle\DataSource\Schema\Table;
 
 /***
  * MysqlTranslator
@@ -58,15 +59,36 @@ class MysqlTranslator implements Translator
     protected function translateCreate(Query $query)
     {
         if ($query->getParameter('type') == 'DATABASE') {
+            // CREATE DATABASE
             $templateQuery = 'CREATE %parameter1% IF NOT EXISTS %parameter2%;';
+        } else if ($query->getParameter('type') == 'TABLE') {
+            // CREATE TABLE
+            $table = $query->getParameter('value');
+
+            if (!($table instanceof Table)) {
+                $table = is_object($table) ? get_class($table) : gettype($table);
+                throw new Exception('Parameter "value" should be an instance of Table, ' . $table . ' given');
+            }
+            $templateQuery = 'CREATE %parameter1% IF NOT EXISTS %parameter2% (';
+            $templateQuery .= $this->getTableDefinition($table->getColumns()) . ');';
+            // we transform Table object into string in query parameters
+            $query->setParameter('value', $table->getName());
         } else {
-            throw new Exception('Mysql create of type ' . $query->getParameter('type') . ' is not implement yet');
+            throw new Exception('Mysql create of type ' . $query->getParameter('type') . ' is not allowed');
         }
         $mysqlQuery = $this->injectParameters($templateQuery, $query->getParameters());
 
         return $mysqlQuery;
     }
 
+    /**
+     * Inject parameter into a query string with formatted strings
+     *
+     * @param $queryString
+     * @param array $parameters
+     * @return mixed
+     * @throws \Exception
+     */
     protected function injectParameters($queryString, array $parameters)
     {
         $toMatch = [];
@@ -83,8 +105,52 @@ class MysqlTranslator implements Translator
                 throw new Exception('Missing parameter ' . $index . ' for query ' . $queryString);
             }
             $replace = array_shift($parameters);
+            $replace = $this->getSanitizer()->sanitize($replace);
             $queryString = str_replace('%parameter' . ($index + 1) . '%', $replace, $queryString);
         }
         return $queryString;
+    }
+
+    protected function getTableDefinition(array $columns)
+    {
+        $definition = '';
+        $numberOfColumns = count($columns);
+        $idColumns = [];
+
+
+        /** @var Column $column */
+        foreach ($columns as $index => $column) {
+            $definition .= $this->getSanitizer()->sanitize($column->getName());
+
+            if ($column->getType() == Constants::COLUMN_TYPE_ID) {
+                $definition .= ' INT AUTO_INCREMENT';
+                $ids[] = $column;
+            } else if ($column->getType() == Constants::COLUMN_TYPE_INTEGER) {
+                $definition .= ' INT ';
+            } else if ($column->getType() == Constants::COLUMN_TYPE_STRING) {
+                $definition .= ' VARCHAR (255) ';
+            } else if ($column->getType() == Constants::COLUMN_TYPE_TEXT) {
+                $definition .= ' TEXT ';
+            } else {
+                throw new Exception('Column type translation is not handled for type :' . $column->getType());
+            }
+            if (!$column->isNullable()) {
+                $definition .= ' NOT_NULL ';
+            }
+            // adding semicolon if necessary
+            if ($index != $numberOfColumns - 1 or count($idColumns)) {
+                $definition .= ',';
+            }
+        }
+        if (count($idColumns)) {
+            $definition .= ' PRIMARY KEY (';
+
+            foreach ($idColumns as $column) {
+                $definition .= $column->getName() . ',';
+            }
+            $definition = substr($definition, 0, strlen($definition) - 1);
+            $definition .= ')';
+        }
+        return $definition;
     }
 } 

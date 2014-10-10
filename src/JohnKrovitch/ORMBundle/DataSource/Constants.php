@@ -36,7 +36,7 @@ class Constants
             self::COLUMN_TYPE_STRING,
             self::COLUMN_TYPE_INTEGER,
             self::COLUMN_TYPE_TEXT,
-            self::COLUMN_TYPE_ID,
+            self::COLUMN_TYPE_ID
         ];
     }
 }

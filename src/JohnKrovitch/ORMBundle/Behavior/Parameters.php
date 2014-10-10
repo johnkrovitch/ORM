@@ -4,7 +4,7 @@ namespace JohnKrovitch\ORMBundle\Behavior;
 
 use Exception;
 
-trait HasParameters
+trait Parameters
 {
     protected $parameters = [];
 
@@ -30,6 +30,14 @@ trait HasParameters
             throw new Exception('Parameter ' . $name . ' not found');
         }
         return $this->parameters[$name];
+    }
+
+    public function setParameter($name, $value)
+    {
+        if (!array_key_exists($name, $this->parameters)) {
+            throw new Exception('Parameter ' . $name . ' not exist');
+        }
+        $this->parameters[$name] = $value;
     }
 
     public function addParameter($name, $value)

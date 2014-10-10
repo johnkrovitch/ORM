@@ -2,8 +2,6 @@
 
 namespace JohnKrovitch\ORMBundle\DataSource;
 
-use JohnKrovitch\ORMBundle\Behavior\HasType;
-
 class QueryBuilder
 {
     /**
@@ -20,6 +18,11 @@ class QueryBuilder
         return $this;
     }
 
+    /**
+     * @param $type string creation type (DATABASE, TABLE...)
+     * @param $value
+     * @return $this
+     */
     public function create($type, $value)
     {
         $this->query = new Query();

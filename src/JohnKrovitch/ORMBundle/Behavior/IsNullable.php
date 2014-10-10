@@ -4,30 +4,30 @@ namespace JohnKrovitch\ORMBundle\Behavior;
 
 use JohnKrovitch\ORMBundle\DataSource\Connection\Driver;
 
-trait HasType
+trait IsNullable
 {
     /**
-     * @var string
+     * @var boolean
      */
-    protected $type;
+    protected $isNullable = true;
 
     /**
      * Return current type
      *
      * @return string
      */
-    public function getType()
+    public function isNullable()
     {
-        return $this->type;
+        return $this->isNullable;
     }
 
     /**
      * Set current type
      *
-     * @param string $type
+     * @param $isNullable
      */
-    public function setType($type)
+    public function setNullable($isNullable)
     {
-        $this->type = $type;
+        $this->isNullable = $isNullable;
     }
 } 

@@ -2,12 +2,12 @@
 
 namespace JohnKrovitch\ORMBundle\DataSource;
 
-use JohnKrovitch\ORMBundle\Behavior\HasParameters;
-use JohnKrovitch\ORMBundle\Behavior\HasType;
+use JohnKrovitch\ORMBundle\Behavior\Parameters;
+use JohnKrovitch\ORMBundle\Behavior\Type;
 
 class Query
 {
-    use HasType, HasParameters;
+    use Type, Parameters;
 
     /**
      * @return string

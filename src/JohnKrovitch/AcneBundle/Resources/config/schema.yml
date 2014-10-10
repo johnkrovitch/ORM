@@ -6,3 +6,4 @@ tables:
         reference:   {type: string, behaviors: [unique]}
         behaviors:
             - timestampable
+            - blameable

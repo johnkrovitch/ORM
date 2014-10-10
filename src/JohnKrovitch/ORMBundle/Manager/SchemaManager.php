@@ -103,7 +103,20 @@ class SchemaManager
             }
         }
         // compare origin schema and destination schema
+        /** @var Differential $differential */
         $differential = $this->compareSchema($this->schema, $schema);
+        // update destination schema with source data
+        $originTables = $differential->getOriginUnMatchedTables();
+
+        foreach ($originTables as $table) {
+            foreach ($this->destinationDrivers as $drivers) {
+                foreach ($drivers as $driver) {
+                    $queryBuilder = new QueryBuilder();
+                    $queryBuilder->create('TABLE', $table);
+                    $driver->query($queryBuilder->getQuery());
+                }
+            }
+        }
 
 
         print_r($differential);
@@ -162,6 +175,7 @@ class SchemaManager
      *
      * @param $data
      * @param Schema $schema
+     * @throws Exception
      * @return Schema
      */
     protected function loadSchema($data, Schema $schema)
@@ -181,12 +195,27 @@ class SchemaManager
             $table->setName($tableName);
 
             foreach ($tableData as $columnName => $columnsData) {
+                // class behaviors
+                if ($columnName == 'behaviors') {
+                    foreach ($columnsData as $behavior) {
+                        $table->addBehavior($behavior);
+                    }
+                    // behaviors is not a "real" column, we skip the rest of the process
+                    continue;
+                }
+                // guess id type if not exist
+                if ($columnName == 'id' and !array_key_exists('type', $columnsData)) {
+                    $columnsData['type'] = 'id';
+                }
+                // set type if allowed
+                if (!in_array($columnsData['type'], $allowedColumnsTypes)) {
+                    throw new Exception('Invalid column type : ' . $columnsData['type'] . ', name : ' . $columnName);
+                }
+                // creating new column
                 $column = new Column();
                 $column->setName($columnName);
+                $column->setType($columnsData['type']);
 
-                if (array_key_exists('behaviors', $columnsData) and in_array($columnsData['type'], $allowedColumnsTypes)) {
-                    $column->setType($columnsData['type']);
-                }
                 if (array_key_exists('behaviors', $columnsData)) {
                     foreach ($columnsData['behaviors'] as $behavior) {
                         $column->addBehavior($behavior);
