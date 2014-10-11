@@ -1,8 +1,8 @@
 parameters:
     # orm managers
-    orm.manager.schema: JohnKrovitch\ORMBundle\Manager\SchemaManager
-    orm.manager.source: JohnKrovitch\ORMBundle\Manager\SourceManager
-    orm.manager.driver: JohnKrovitch\ORMBundle\Manager\DriverManager
+    orm.manager.schema:   JohnKrovitch\ORMBundle\Manager\SchemaManager
+    orm.manager.source:   JohnKrovitch\ORMBundle\Manager\SourceManager
+    orm.manager.driver:   JohnKrovitch\ORMBundle\Manager\DriverManager
 
     # orm drivers
     orm.driver.mysql:  JohnKrovitch\ORMBundle\DataSource\Connection\Driver\MysqlDriver
@@ -20,8 +20,8 @@ services:
     orm.manager.schema:
         class: %orm.manager.schema%
         calls:
-            - [setContainer, [@service_container]]
             - [setSourceManager, [@orm.manager.source]]
+            - [setBehaviorManager, [@orm.manager.behavior]]
 
     orm.manager.source:
         class: %orm.manager.source%

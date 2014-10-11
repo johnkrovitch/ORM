@@ -4,7 +4,6 @@ namespace JohnKrovitch\ORMBundle\Manager;
 
 use Exception;
 use InvalidArgumentException;
-use JohnKrovitch\ORMBundle\Behavior\HasContainer;
 use JohnKrovitch\ORMBundle\Behavior\HasSource;
 use JohnKrovitch\ORMBundle\Behavior\HasSourceManager;
 use JohnKrovitch\ORMBundle\DataSource\Connection\Driver;
@@ -23,7 +22,7 @@ use JohnKrovitch\ORMBundle\DataSource\Schema\Table;
  */
 class SchemaManager
 {
-    use HasContainer, HasSourceManager, HasSource;
+    use HasSourceManager, HasSource;
 
     /**
      * Arrays of drivers by type to access to origin data sources
@@ -46,6 +45,11 @@ class SchemaManager
      */
     protected $schema = [];
 
+    /**
+     * If true, schema has already been loaded
+     *
+     * @var bool
+     */
     protected $isLoaded = false;
 
     /**
@@ -79,7 +83,7 @@ class SchemaManager
     /**
      * Synchronize schema with database
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function synchronize()
     {
@@ -117,6 +121,7 @@ class SchemaManager
                 }
             }
         }
+        // TODO trigger event
     }
 
     /**

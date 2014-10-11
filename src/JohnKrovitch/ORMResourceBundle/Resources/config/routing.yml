@@ -1,0 +1,3 @@
+john_krovitch_orm_resource_homepage:
+    path:     /hello/{name}
+    defaults: { _controller: JohnKrovitchORMResourceBundle:Default:index }

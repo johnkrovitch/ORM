@@ -1,15 +1,11 @@
+john_krovitch_orm_resource:
+    resource: "@JohnKrovitchORMResourceBundle/Resources/config/routing.yml"
+    prefix:   /
+
 john_krovitch_acne:
     resource: "@JohnKrovitchAcneBundle/Resources/config/routing.yml"
     prefix:   /
 
 john_krovitch_orm:
     resource: "@JohnKrovitchORMBundle/Resources/config/routing.yml"
-    prefix:   /
-
-blue_bear_editor:
-    resource: "@BlueBearEditorBundle/Resources/config/routing.yml"
-    prefix:   /
-
-blue_bear_backoffice:
-    resource: "@BlueBearBackofficeBundle/Resources/config/routing.yml"
     prefix:   /

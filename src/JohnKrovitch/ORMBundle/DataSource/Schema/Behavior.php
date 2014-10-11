@@ -2,7 +2,7 @@
 
 namespace JohnKrovitch\ORMBundle\DataSource\Schema;
 
-class Behavior
+abstract class Behavior
 {
-
+    public abstract function getName();
 } 
