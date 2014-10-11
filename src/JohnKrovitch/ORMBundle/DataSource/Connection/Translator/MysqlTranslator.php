@@ -123,7 +123,7 @@ class MysqlTranslator implements Translator
             $definition .= $this->getSanitizer()->sanitize($column->getName());
 
             if ($column->getType() == Constants::COLUMN_TYPE_ID) {
-                $definition .= ' INT AUTO_INCREMENT';
+                $definition .= ' INT NOT NULL AUTO_INCREMENT PRIMARY KEY';
                 $ids[] = $column;
             } else if ($column->getType() == Constants::COLUMN_TYPE_INTEGER) {
                 $definition .= ' INT ';
@@ -135,11 +135,11 @@ class MysqlTranslator implements Translator
                 throw new Exception('Column type translation is not handled for type :' . $column->getType());
             }
             if (!$column->isNullable()) {
-                $definition .= ' NOT_NULL ';
+                $definition .= ' NOT NULL ';
             }
             // adding semicolon if necessary
             if ($index != $numberOfColumns - 1 or count($idColumns)) {
-                $definition .= ',';
+                $definition .= ', ';
             }
         }
         if (count($idColumns)) {

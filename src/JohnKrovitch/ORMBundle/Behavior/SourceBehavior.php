@@ -3,14 +3,12 @@
 namespace JohnKrovitch\ORMBundle\Behavior;
 
 use Exception;
-use JohnKrovitch\ORMBundle\Behavior\HasDriver;
-use JohnKrovitch\ORMBundle\Behavior\HasName;
 use JohnKrovitch\ORMBundle\DataSource\Connection\Source;
 use JohnKrovitch\ORMBundle\DataSource\Constants;
 
 trait SourceBehavior
 {
-    use HasDriver, HasName;
+    use HasDriver, Name;
 
     protected $login;
 

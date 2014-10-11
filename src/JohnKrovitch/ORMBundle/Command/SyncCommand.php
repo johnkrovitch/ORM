@@ -59,6 +59,7 @@ class SyncCommand extends ContainerAwareCommand
         // once the schema is loaded we synchronize it with the database
         $this->writeInfo($output, $this->ormConsoleMarkup, ' Synchronizing schema with database...');
         $schemaManager->synchronize();
+        $this->writeInfo($output, $this->ormConsoleMarkup, ' Synchronization successful...');
 
         $output->writeln($this->getMemoryUsage());
     }

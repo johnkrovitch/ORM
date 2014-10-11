@@ -4,7 +4,7 @@ namespace JohnKrovitch\ORMBundle\Behavior;
 
 use JohnKrovitch\ORMBundle\DataSource\Connection\Driver;
 
-trait HasName
+trait Name
 {
     /**
      * @var string

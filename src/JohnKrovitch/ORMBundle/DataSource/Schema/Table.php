@@ -2,12 +2,12 @@
 
 namespace JohnKrovitch\ORMBundle\DataSource\Schema;
 
-use JohnKrovitch\ORMBundle\Behavior\HasBehaviors;
-use JohnKrovitch\ORMBundle\Behavior\HasName;
+use JohnKrovitch\ORMBundle\Behavior\Behaviors;
+use JohnKrovitch\ORMBundle\Behavior\Name;
 
 class Table
 {
-    use HasName, HasBehaviors;
+    use Name, Behaviors;
 
     protected $columns = [];
 

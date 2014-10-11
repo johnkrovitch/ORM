@@ -2,7 +2,7 @@
 
 namespace JohnKrovitch\ORMBundle\Behavior;
 
-trait HasBehaviors
+trait Behaviors
 {
     protected $behaviors = [];
 

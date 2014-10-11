@@ -117,12 +117,6 @@ class SchemaManager
                 }
             }
         }
-
-
-        print_r($differential);
-
-
-        die('sync in progress');
     }
 
     /**

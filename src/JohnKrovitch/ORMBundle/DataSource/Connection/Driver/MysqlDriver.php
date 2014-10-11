@@ -53,6 +53,8 @@ class MysqlDriver implements Driver
         $options = [];
         // connection to database
         $this->pdo = new PDO($dsn, $source->getLogin(), $source->getPassword(), $options);
+        // TODO move error mode in configuration
+        $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         // at this point we are connected
         $this->isConnected = true;
 
@@ -64,6 +66,7 @@ class MysqlDriver implements Driver
         $databases = $queryResult->getResults(Constants::FETCH_TYPE_ARRAY);
         $shouldCreate = true;
 
+        // TODO do no create database each time
         // TODO move database logic creation elsewhere ?
         foreach ($databases as $database) {
             if (array_key_exists('DataSource', $database) and $database['Database'] == $source->getName()) {
@@ -90,7 +93,7 @@ class MysqlDriver implements Driver
     }
 
     /**
-     * Read data from driver via a query
+     * Execute a query on mysql database
      *
      * @param Query $query
      * @throws Exception
@@ -108,6 +111,7 @@ class MysqlDriver implements Driver
         // TODO only log in dev mode
         $this->getLogger()->info('>>> ORM query : ' . $translatedQuery);
         // hydrate result object
+        // TODO handle boolean result (in case of CREATE for example)
         $pdoStatement = $this->pdo->query($translatedQuery);
         $queryResult = new MysqlQueryResult($pdoStatement);
 
