@@ -14,6 +14,7 @@ parameters:
 
     # utils
     orm.utils.sanitizer: JohnKrovitch\ORMBundle\Utils\Sanitizer
+    orm.utils.schema_comparator: JohnKrovitch\ORMBundle\Utils\SchemaComparator
 
 services:
     # orm managers
@@ -21,7 +22,8 @@ services:
         class: %orm.manager.schema%
         calls:
             - [setSourceManager, [@orm.manager.source]]
-            - [setBehaviorManager, [@orm.manager.behavior]]
+            - [setEventDispatcher, [@event_dispatcher]]
+            - [setSchemaComparator, [@orm.utils.schema_comparator]]
 
     orm.manager.source:
         class: %orm.manager.source%
@@ -55,5 +57,9 @@ services:
         calls:
             - [setSanitizer, [@orm.utils.sanitizer]]
 
+    # utils
     orm.utils.sanitizer:
         class: %orm.utils.sanitizer%
+
+    orm.utils.schema_comparator:
+        class: %orm.utils.schema_comparator%

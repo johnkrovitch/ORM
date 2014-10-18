@@ -3,7 +3,8 @@
 namespace JohnKrovitch\ORMBundle\Manager;
 
 use Exception;
-use InvalidArgumentException;
+use JohnKrovitch\ORMBundle\Behavior\EventDispatcher;
+use JohnKrovitch\ORMBundle\Behavior\HasSchemaComparator;
 use JohnKrovitch\ORMBundle\Behavior\HasSource;
 use JohnKrovitch\ORMBundle\Behavior\HasSourceManager;
 use JohnKrovitch\ORMBundle\DataSource\Connection\Driver;
@@ -14,6 +15,8 @@ use JohnKrovitch\ORMBundle\DataSource\Schema\Column;
 use JohnKrovitch\ORMBundle\DataSource\Schema\Differential;
 use JohnKrovitch\ORMBundle\DataSource\Schema\Schema;
 use JohnKrovitch\ORMBundle\DataSource\Schema\Table;
+use JohnKrovitch\ORMBundle\Event\Event;
+use JohnKrovitch\ORMBundle\Event\SchemaEvent;
 
 /**
  * SchemaLoader
@@ -22,7 +25,7 @@ use JohnKrovitch\ORMBundle\DataSource\Schema\Table;
  */
 class SchemaManager
 {
-    use HasSourceManager, HasSource;
+    use HasSourceManager, HasSchemaComparator, HasSource, EventDispatcher;
 
     /**
      * Arrays of drivers by type to access to origin data sources
@@ -65,14 +68,14 @@ class SchemaManager
         }
         $schema = new Schema();
         $queryBuilder = new QueryBuilder();
-        $queryBuilder->show('TABLES');
+        $queryBuilder->describe();
 
         foreach ($this->originDrivers as $drivers) {
             /** @var Driver $driver */
             foreach ($drivers as $driver) {
-                $data = $driver->query($queryBuilder->getQuery());
-                $this->checkData($data);
-                $this->loadSchema($data, $schema);
+                $queryResult = $driver->query($queryBuilder->getQuery());
+                $this->checkData($queryResult);
+                $this->loadSchema($queryResult, $schema);
             }
         }
         $this->schema = $schema;
@@ -95,7 +98,7 @@ class SchemaManager
         }
         $schema = new Schema();
         $queryBuilder = new QueryBuilder();
-        $queryBuilder->show('TABLES');
+        $queryBuilder->describe();
 
         // load schema from database destination
         foreach ($this->destinationDrivers as $drivers) {
@@ -108,7 +111,7 @@ class SchemaManager
         }
         // compare origin schema and destination schema
         /** @var Differential $differential */
-        $differential = $this->compareSchema($this->schema, $schema);
+        $differential = $this->getSchemaComparator()->compare($this->schema, $schema);
         // update destination schema with source data
         $originTables = $differential->getOriginUnMatchedTables();
 
@@ -121,40 +124,10 @@ class SchemaManager
                 }
             }
         }
-        // TODO trigger event
-    }
+        // TODO handle column deletion
 
-    /**
-     * Return a differential between two schemas
-     *
-     * @param Schema $origin
-     * @param Schema $destination
-     * @return Differential
-     */
-    public function compareSchema(Schema $origin, Schema $destination)
-    {
-        $unmatchedOrigin = [];
-        $unmatchedDestination = [];
-        $originTables = $origin->getTables();
-        $destinationTables = $destination->getTables();
-        // compare origin and destination tables
-        $differentialOrigin = array_diff(array_keys($originTables), array_keys($destinationTables));
-        $differentialDestination = array_diff(array_keys($destinationTables), array_keys($originTables));
-
-        foreach ($differentialOrigin as $tableName) {
-            $unmatchedOrigin[] = $originTables[$tableName];
-        }
-        foreach ($differentialDestination as $tableName) {
-            $unmatchedDestination[] = $destinationTables[$tableName];
-        }
-        // if two tables have the same name, we compare their columns
-        $commonTables = array_intersect(array_keys($originTables), array_keys($destinationTables));
-
-        foreach ($commonTables as $tableName) {
-            $unmatchedOrigin[] = $originTables[$tableName];
-            $unmatchedDestination[] = $destinationTables[$tableName];
-        }
-        return new Differential($unmatchedOrigin, $unmatchedDestination);
+        // trigger synchronization successful event
+        $this->getEventDispatcher()->dispatch(Event::ORM_SCHEMA_SYNCHRONIZED, new SchemaEvent($this->schema));
     }
 
     /**
@@ -172,22 +145,17 @@ class SchemaManager
     /**
      * Load schema data from source into schema objects Table and Column
      *
-     * @param $data
+     * @param $queryResult
      * @param Schema $schema
      * @throws Exception
      * @return Schema
      */
-    protected function loadSchema($data, Schema $schema)
+    protected function loadSchema(QueryResult $queryResult, Schema $schema)
     {
         // init database
         $allowedColumnsTypes = Constants::getColumnsAllowedTypes();
+        $tablesData = $queryResult->getResults(Constants::FETCH_TYPE_ARRAY);
 
-        // TODO always have a query result
-        if ($data instanceof QueryResult) {
-            $tablesData = $data->getResults(Constants::FETCH_TYPE_ARRAY);
-        } else {
-            $tablesData = $data['tables'];
-        }
         // read data, create table and load table into database schema
         foreach ($tablesData as $tableName => $tableData) {
             $table = new Table();
@@ -206,24 +174,34 @@ class SchemaManager
                 if ($columnName == 'id' and !array_key_exists('type', $columnsData)) {
                     $columnsData['type'] = 'id';
                 }
-                // set type if allowed
+                // type must exists
+                if (!array_key_exists('type', $columnsData)) {
+                    throw new Exception('Column type is null for column: "' . $columnName . '"');
+                }
+                // set type if allowed{}
                 if (!in_array($columnsData['type'], $allowedColumnsTypes)) {
-                    throw new Exception('Invalid column type : ' . $columnsData['type'] . ', name : ' . $columnName);
+                    throw new Exception('Invalid column type: "' . $columnsData['type'] . '", name : ' . $columnName);
                 }
                 // creating new column
                 $column = new Column();
                 $column->setName($columnName);
                 $column->setType($columnsData['type']);
 
+                // column behavior (unique, timestampable...)
                 if (array_key_exists('behaviors', $columnsData)) {
                     foreach ($columnsData['behaviors'] as $behavior) {
                         $column->addBehavior($behavior);
                     }
                 }
+                // if column is nullable
+                if (array_key_exists('nullable', $columnsData) and $columnsData['nullable'] === false) {
+                    $column->setNullable(false);
+                }
                 $table->addColumn($column);
             }
             $schema->addTable($table);
         }
+        $this->getEventDispatcher(Event::ORM_SCHEMA_LOAD, new SchemaEvent($schema));
         $this->isLoaded = true;
 
         return $schema;
@@ -244,15 +222,8 @@ class SchemaManager
             if (is_array($data) and !array_key_exists('tables', $data)) {
                 throw new Exception('Expecting "tables" root node, got ' . "\n" . print_r($data, true));
             }
-        } else if ($data instanceof QueryResult) {
-            // data from query (generally database)
-            $results = $data->getResults(Constants::FETCH_TYPE_ARRAY);
-
-            if (!is_array($results)) {
-                throw new InvalidArgumentException('Invalid data from query result for schema manager');
-            }
         } else {
-            throw new Exception('Trying to load empty or in valid data. expected: array, got: ' . "\n" . print_r($data, true));
+            //throw new Exception('Trying to load empty or in valid data. expected: array, got: ' . "\n" . print_r($data, true));
         }
         // TODO check data integrity
     }

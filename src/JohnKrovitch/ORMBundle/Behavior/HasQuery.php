@@ -1,15 +1,11 @@
 <?php
 
-namespace JohnKrovitch\ORMBundle\DataSource\Base;
+namespace JohnKrovitch\ORMBundle\Behavior;
 
-use JohnKrovitch\ORMBundle\Behavior\Collection;
 use JohnKrovitch\ORMBundle\DataSource\Query;
-use JohnKrovitch\ORMBundle\DataSource\QueryResult;
 
-abstract class BaseQueryResult implements QueryResult
+trait HasQuery
 {
-    use Collection;
-
     /**
      * @var Query
      */
@@ -30,4 +26,4 @@ abstract class BaseQueryResult implements QueryResult
     {
         $this->query = $query;
     }
-}
+} 

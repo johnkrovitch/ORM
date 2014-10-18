@@ -21,3 +21,5 @@ services:
     # orm managers
     orm.manager.behavior:
         class: %orm.manager.behavior%
+        tags:
+            - {name: kernel.event_listener, event: orm.schema.synchronisation, method: dispatchLoad}

@@ -35,7 +35,7 @@ trait Parameters
     public function setParameter($name, $value)
     {
         if (!array_key_exists($name, $this->parameters)) {
-            throw new Exception('Parameter ' . $name . ' not exist');
+            throw new Exception('Parameter ' . $name . ' not exist, you should add the parameter first');
         }
         $this->parameters[$name] = $value;
     }

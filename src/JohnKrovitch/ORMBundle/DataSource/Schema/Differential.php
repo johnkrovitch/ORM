@@ -4,22 +4,37 @@ namespace JohnKrovitch\ORMBundle\DataSource\Schema;
 
 class Differential
 {
-    protected $unmatchedOrigin;
-    protected $unmatchedDestination;
+    protected $origin = [];
 
-    public function __construct(array $unmatchedOrigin, array $unmatchedDestination)
+    protected $destination = [];
+
+    public function addOriginColumn(Table $table, Column $column)
     {
-        $this->unmatchedOrigin = $unmatchedOrigin;
-        $this->unmatchedDestination = $unmatchedDestination;
+        $this->origin['column'][] = [
+            'table' => $table,
+            'column' => $column
+        ];
     }
 
-    public function getOriginUnMatchedTables()
+    public function addOriginTable(Table $table)
     {
-        return $this->unmatchedOrigin;
+        $this->origin['table'][] = [
+            'table' => $table
+        ];
     }
 
-    public function getDestinationUnMatchedTables()
+    public function addDestinationColumn(Table $table, Column $column)
     {
-        return $this->unmatchedDestination;
+        $this->destination['column'][] = [
+            'table' => $table,
+            'column' => $column
+        ];
+    }
+
+    public function addDestinationTable(Table $table)
+    {
+        $this->destination['table'][] = [
+            'table' => $table
+        ];
     }
 }

@@ -3,7 +3,6 @@ tables:
         id:          {type: id}
         name:        {type: string}
         description: {type: text}
-        reference:   {type: string, behaviors: [unique]}
+        reference:   {type: string, behaviors: [unique], nullable: false}
         behaviors:
             - timestampable
-            - blameable

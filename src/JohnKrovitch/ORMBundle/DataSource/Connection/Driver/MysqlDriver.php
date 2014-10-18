@@ -6,13 +6,14 @@ use Exception;
 use JohnKrovitch\ORMBundle\Behavior\HasLogger;
 use JohnKrovitch\ORMBundle\Behavior\HasTranslator;
 use JohnKrovitch\ORMBundle\DataSource\Connection\Driver;
-use JohnKrovitch\ORMBundle\DataSource\Connection\Result\MysqlQueryResult;
+use JohnKrovitch\ORMBundle\DataSource\Connection\Result\RawResult;
 use JohnKrovitch\ORMBundle\DataSource\Connection\Source;
 use JohnKrovitch\ORMBundle\DataSource\Connection\Source\MysqlSource;
 use JohnKrovitch\ORMBundle\DataSource\Constants;
 use JohnKrovitch\ORMBundle\DataSource\Query;
 use JohnKrovitch\ORMBundle\DataSource\QueryBuilder;
 use PDO;
+use PDOStatement;
 
 /**
  * MysqlDriver
@@ -21,6 +22,8 @@ use PDO;
  */
 class MysqlDriver implements Driver
 {
+    const RETURN_CODE_SUCCESS = '00000';
+
     use HasTranslator, HasLogger;
 
     /**
@@ -105,28 +108,18 @@ class MysqlDriver implements Driver
             // database connection if required
             $this->connect();
         }
-        // translate into SQL query
-        $translatedQuery = $this->getTranslator()->translate($query);
+        $queries = $query->getQueries();
+        // execute main query
+        $rawResult = $this->execute($query);
 
-        // TODO only log in dev mode
-        $this->getLogger()->info('>>> ORM query : ' . $translatedQuery);
-        // hydrate result object
-        // TODO handle boolean result (in case of CREATE for example)
-        $pdoStatement = $this->pdo->query($translatedQuery);
-        $queryResult = new MysqlQueryResult($pdoStatement);
-
-        if (!$pdoStatement or $queryResult->hasErrors()) {
-            $message = 'An error has occurred in query ' . $translatedQuery;
-            $message .= implode($this->pdo->errorInfo(), "\n");
-
-            throw new Exception($message);
+        // execute additional queries
+        foreach ($queries as $query) {
+            $rawResult->addRawResults($this->execute($query));
         }
-        return $queryResult;
-    }
+        // translate query into mysql result
+        $queryResult = $this->getTranslator()->reverseTranslate($rawResult);
 
-    public function write()
-    {
-        die('Not implemented yet');
+        return $queryResult;
     }
 
     public function setSource($source)
@@ -151,5 +144,32 @@ class MysqlDriver implements Driver
     public function getType()
     {
         return Constants::DRIVER_TYPE_PDO_MYSQL;
+    }
+
+    protected function execute(Query $query)
+    {
+        // translate into SQL query
+        $translatedQuery = $this->getTranslator()->translate($query);
+        // TODO handle boolean result (in case of CREATE for example)
+        // TODO add a try catch
+        // TODO only log in dev mode
+        $this->getLogger()->info('>>> ORM query : ' . $translatedQuery);
+        // pdo mysql query
+        /** @var PDOStatement $pdoStatement */
+        $pdoStatement = $this->pdo->query($translatedQuery);
+        $query->setExecuted(true);
+
+        if ($pdoStatement->errorCode() != self::RETURN_CODE_SUCCESS) {
+            $message = 'An error has occurred in query "' . $translatedQuery . '". ' . implode($this->pdo->errorInfo(), "\n");
+            $this->getLogger()->error('>>> ORM ERROR query : ' . $translatedQuery . ', mysql code : ' . $pdoStatement->errorCode());
+
+            throw new Exception($message);
+        }
+        // hydrate result object
+        $rawResult = new RawResult();
+        $rawResult->setData($pdoStatement);
+        $rawResult->setQuery($query);
+
+        return $rawResult;
     }
 }

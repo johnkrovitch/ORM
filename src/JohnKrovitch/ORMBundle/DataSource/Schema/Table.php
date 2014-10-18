@@ -13,11 +13,16 @@ class Table
 
     public function addColumn(Column $column)
     {
-        $this->columns[] = $column;
+        $this->columns[$column->getName()] = $column;
     }
 
     public function getColumns()
     {
         return $this->columns;
+    }
+
+    public function getColumn($name)
+    {
+        return $this->columns[$name];
     }
 } 

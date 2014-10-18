@@ -4,6 +4,8 @@ namespace JohnKrovitch\ORMBundle\DataSource\Connection\Translator;
 
 use Exception;
 use JohnKrovitch\ORMBundle\Behavior\HasSanitizer;
+use JohnKrovitch\ORMBundle\DataSource\Connection\Result\MysqlQueryResult;
+use JohnKrovitch\ORMBundle\DataSource\Connection\Result\RawResult;
 use JohnKrovitch\ORMBundle\DataSource\Connection\Translator;
 use JohnKrovitch\ORMBundle\DataSource\Constants;
 use JohnKrovitch\ORMBundle\DataSource\Query;
@@ -34,10 +36,26 @@ class MysqlTranslator implements Translator
             $translatedQuery = $this->translateUse($query);
         } else if ($query->getType() == Constants::QUERY_TYPE_CREATE) {
             $translatedQuery = $this->translateCreate($query);
+        } else if ($query->getType() == Constants::QUERY_TYPE_DESCRIBE) {
+            $translatedQuery = $this->translateDescribe($query);
         } else {
             throw new Exception($query->getType() . ' query type is not allowed yet for mysql translator');
         }
+        $query->setTranslatedQuery($query);
+
         return $translatedQuery;
+    }
+
+    public function reverseTranslate(RawResult $rawResult)
+    {
+        if (!$rawResult->getQuery()->isExecuted()) {
+            throw new Exception('Query must be translated before being inverse translated');
+        }
+        $queryResult = new MysqlQueryResult();
+        $queryResult->setQuery($rawResult->getQuery());
+        $queryResult->setStatement($rawResult->getData());
+
+        return $queryResult;
     }
 
     protected function translateShow(Query $query)
@@ -79,6 +97,25 @@ class MysqlTranslator implements Translator
         $mysqlQuery = $this->injectParameters($templateQuery, $query->getParameters());
 
         return $mysqlQuery;
+    }
+
+    protected function translateDescribe(Query $query)
+    {
+        if (count($query->getParameters())) {
+            throw new Exception('Describe query should not have parameters');
+        }
+        $query->addParameter('value', 'DATABASES');
+        $templateQuery = $this->translateShow($query);
+
+        // create additional query to show table
+        $additionalQuery = new Query();
+        $additionalQuery->setType(Constants::QUERY_TYPE_SHOW);
+        $additionalQuery->addParameter('value', 'TABLES');
+        $this->translate($additionalQuery);
+        // add to main query
+        $query->addQuery($additionalQuery);
+
+        return $templateQuery;
     }
 
     /**

@@ -29,6 +29,7 @@ class Constants
     const QUERY_TYPE_SELECT = 'select';
     const QUERY_TYPE_UPDATE = 'update';
     const QUERY_TYPE_DELETE = 'delete';
+    const QUERY_TYPE_DESCRIBE = 'describe';
 
     public static function getColumnsAllowedTypes()
     {

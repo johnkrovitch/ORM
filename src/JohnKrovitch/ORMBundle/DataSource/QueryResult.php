@@ -3,13 +3,12 @@
 namespace JohnKrovitch\ORMBundle\DataSource;
 
 use Exception;
-use JohnKrovitch\ORMBundle\Behavior\Collection;
 
 
 interface QueryResult extends \Countable, \IteratorAggregate, \ArrayAccess
 {
     /**
-     * Return hydrate result from pdo statement
+     * Return results from query
      *
      * @param $hydrationMode
      * @return array

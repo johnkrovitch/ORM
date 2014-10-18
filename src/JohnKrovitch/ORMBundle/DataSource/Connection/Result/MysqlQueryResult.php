@@ -6,9 +6,31 @@ use Exception;
 use JohnKrovitch\ORMBundle\DataSource\Base\BaseQueryResult;
 use JohnKrovitch\ORMBundle\DataSource\Constants;
 use PDO;
+use PDOStatement;
 
 class MysqlQueryResult extends BaseQueryResult
 {
+    /**
+     * @var PDOStatement
+     */
+    protected $statement;
+
+    /**
+     * @return PDOStatement
+     */
+    public function getStatement()
+    {
+        return $this->statement;
+    }
+
+    /**
+     * @param PDOStatement $statement
+     */
+    public function setStatement(PDOStatement $statement)
+    {
+        $this->statement = $statement;
+    }
+
     /**
      * Return hydrate result from pdo statement
      *
@@ -25,7 +47,7 @@ class MysqlQueryResult extends BaseQueryResult
         } else {
             throw new Exception('Invalid hydration mode (allowed ' . Constants::FETCH_TYPE_OBJECT . ', ' . Constants::FETCH_TYPE_ARRAY . ')');
         }
-        return $results;
+        return $this->organizeResults($results);
     }
 
     /**
@@ -61,5 +83,19 @@ class MysqlQueryResult extends BaseQueryResult
             $errorInfo = $this->statement->errorInfo();
         }
         return $errorInfo;
+    }
+
+    protected function organizeResults($results)
+    {
+        $sorted = [];
+        // in mysql, results are different according to query type
+        if ($this->getQuery()->getType() == Constants::QUERY_TYPE_DESCRIBE) {
+            $sorted = [];
+
+            foreach ($results as $index => $result) {
+                $sorted[] = $results[$index]['Database'];
+            }
+        }
+        return $sorted;
     }
 }
