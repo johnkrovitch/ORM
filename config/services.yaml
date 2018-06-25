@@ -1,0 +1,30 @@
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
+parameters:
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+        bind:
+            $ORMDatabaseConfiguration: '%orm.databases%'
+            $kernelProjectDirectory: '%kernel.project_dir%'
+
+    App\:
+        resource: '../src/*'
+        exclude: '../src/{Collection,Entity,Event,Migrations,Database,Tests,Kernel.php}'
+        public: true
+
+    App\Controller\:
+        resource: '../src/Controller'
+        tags: ['controller.service_arguments']
+
+    App\Database\Connection\Driver\MysqlDriver:
+        class: App\Database\Connection\Driver\MysqlDriver
+        tags:
+            - {name: orm.driver}
+        arguments:
+            - '@App\Database\Connection\Translator\MysqlTranslator'
+
+    App\Database\Connection\Translator\MysqlTranslator: ~

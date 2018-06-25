@@ -1,0 +1,123 @@
+<?php
+
+namespace App\Command;
+
+use App\Behavior\CommandBehavior;
+use App\Database\Connection\Database;
+use App\Database\QueryBuilder\DatabaseQueryBuilder;
+use App\Database\Schema\Schema;
+use App\Manager\DatabaseManager;
+use App\Manager\DriverManager;
+use App\Manager\SchemaManager;
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
+
+
+class SyncCommand extends ContainerAwareCommand
+{
+    use CommandBehavior;
+
+    public function configure()
+    {
+        $this
+            ->setName('orm:database:sync')
+            ->setDescription('Synchronize database from various sources')
+            //->addOption('source', 's', InputOption::VALUE_OPTIONAL, 'Allowed values: yml, database', 'yml')
+            ->setHelp('Call your network administrator')
+        ;
+    }
+
+    public function run(InputInterface $input, OutputInterface $output)
+    {
+        $this->style = new SymfonyStyle($input, $output);
+        $this->container = $this->getContainer();
+
+        $this->style->title('ORM Synchronize database with schema');
+
+        if (!($source = $input->hasOption('source'))) {
+            $sources[] = 'yml';
+        }
+        $this->style->text('Loading database...');
+        $schemaManager = $this->container->get(SchemaManager::class);
+
+        $databaseManager = $this->container->get(DatabaseManager::class);
+        $databaseManager->load();
+
+
+
+
+        /** @var Database $database */
+        $database = $databaseManager->get('main');
+        $schemaManager->load($database);
+
+
+
+        //dump($result->fetchAll());
+
+
+
+
+        die;
+
+
+        $schemaManager = $this->container->get(SchemaManager::class);
+        $schemaManager->load();
+
+
+        $sourceManager = $this->container->get(SourceManager::class);
+        $driverManager = $this->container->get(DriverManager::class);
+
+        $this->style->text('Loading sources...');
+
+        // creating origin sources from options
+        $originDataSources = $sourceManager->createSourcesFromOptions($input->getOptions());
+        $destinationSources = $sourceManager->createSourcesFromOptions($this->getDatabaseParameters());
+
+        // creating origin driver according to source type
+        $this->writeInfo($output, $this->ormConsoleMarkup, ' Loading drivers...');
+        $originDrivers = $driverManager->createDriversFromSources($originDataSources);
+        $destinationDrivers = $driverManager->createDriversFromSources($destinationSources);
+
+        // loading drivers into schema manager
+        $schemaManager->setDrivers($originDrivers, $destinationDrivers);
+
+        // loading schema into objects
+        $this->writeInfo($output, $this->ormConsoleMarkup, ' Loading schema...');
+
+        // once the schema is loaded we synchronize it with the database
+        $this->writeInfo($output, $this->ormConsoleMarkup, ' Synchronizing schema with database...');
+        $schemaManager->synchronize();
+        $this->writeInfo($output, $this->ormConsoleMarkup, ' Synchronization successful...');
+
+        $output->writeln($this->getMemoryUsage());
+    }
+
+    /**
+     * Return data for database connection from parameters.yml
+     *
+     * @return array
+     */
+    public function getDatabaseParameters()
+    {
+        $database = $this->getContainer()->getParameter('database');
+        $host = $database['host'];
+        $databaseDriver = $database['driver'];
+        $name = $database['name'];
+        $port = $database['port'];
+        $login = $database['login'];
+        $password = $database['password'];
+
+        return [
+            'type' => $databaseDriver,
+            'MyDatabase' => [
+                'host' => $host,
+                'name' => $name,
+                'login' => $login,
+                'password' => $password,
+                'port' => $port
+            ]
+        ];
+    }
+} 

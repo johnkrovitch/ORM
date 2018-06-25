@@ -1,0 +1,19 @@
+entities:
+    App\Entity\Product:
+        table: product
+        fields:
+            id:
+                type: id
+                options:
+                    primary_key: increment
+            name:
+                type: string
+            description:
+                type: text
+            reference:
+                type: string
+                options:
+                    unique: true
+                    nullable: false
+        behaviors:
+            - timestampable
