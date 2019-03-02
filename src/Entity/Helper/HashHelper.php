@@ -5,7 +5,6 @@ namespace App\Entity\Helper;
 use App\Entity\Metadata\Metadata;
 use App\Exception\Exception;
 use App\Exception\PrimaryKeyNotFoundException;
-use Symfony\Component\PropertyAccess\PropertyAccess;
 
 class HashHelper
 {
@@ -22,18 +21,13 @@ class HashHelper
     public static function hashEntity($entity, Metadata $metadata): string
     {
         $class = get_class($entity);
-        $primaryKeys = $metadata->getPrimaryKey();
+        $primaryKeys = $metadata->getPrimaryKeys();
 
         if (0 === count($primaryKeys)) {
             throw new PrimaryKeyNotFoundException($metadata);
         }
-        $ids = [];
-        $accessor = PropertyAccess::createPropertyAccessor();
 
-        foreach ($primaryKeys as $property => $primaryKey) {
-            $ids[] = $accessor->getValue($entity, $property);
-        }
-        $hash = $class.'__'.implode($ids, '_');
+        $hash = $class.'__'.implode(PrimaryKeyHelper::getPrimaryKeyValues($entity, $metadata), '_');
 
         return $hash;
     }

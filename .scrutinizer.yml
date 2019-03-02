@@ -1,0 +1,8 @@
+tools:
+    external_code_coverage: true
+
+filter:
+    excluded_paths:
+        - 'bin/'
+        - 'tests/'
+        - 'var/'

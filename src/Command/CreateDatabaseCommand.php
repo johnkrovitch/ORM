@@ -35,10 +35,10 @@ class CreateDatabaseCommand extends ContainerAwareCommand
         $databaseManager->load();
 
         // TODO find all db
-        // TODO get db name
         $database = $databaseManager->get('main');
 
         $commandBuilder = new CommandBuilder();
+        // TODO get db name
         $commandBuilder->createDatabase('orm_test');
         $result = $database->getDriver()->command($commandBuilder->getCommand());
 
