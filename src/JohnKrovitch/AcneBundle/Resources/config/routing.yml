@@ -1,3 +1,0 @@
-john_krovitch_acne_homepage:
-    pattern:  /hello/{name}
-    defaults: { _controller: JohnKrovitchAcneBundle:Default:index }

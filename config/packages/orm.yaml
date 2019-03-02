@@ -1,0 +1,13 @@
+orm:
+    databases:
+        main:
+            driver: mysql
+            dsn: '%env(DATABASE_URL)%'
+            schema: schema.yml
+
+#        yml:
+#            driver: yaml
+#            dsn: 'file://%kernel.project_dir%/var/data'
+#            schema: schema.yml
+#
+#        firebase: ~

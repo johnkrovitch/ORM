@@ -1,3 +1,0 @@
-john_krovitch_orm_homepage:
-    pattern:  /hello/{name}
-    defaults: { _controller: JohnKrovitchORMBundle:Default:index }

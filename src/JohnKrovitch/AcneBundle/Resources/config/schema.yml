@@ -1,9 +1,0 @@
-tables:
-    Product:
-        id:          {type: id}
-        name:        {type: string}
-        description: {type: text}
-        reference:   {type: string, behaviors: [unique]}
-        behaviors:
-            - timestampable
-            - blameable
