@@ -1,0 +1,18 @@
+language: php
+
+services:
+    - mysql
+
+php:
+    - 7.2
+
+install:
+    - make install
+
+script:
+  - make tests@phpunit
+  - bin/console security:check
+
+after_script:
+  - wget https://scrutinizer-ci.com/ocular.phar
+  - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
