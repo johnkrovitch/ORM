@@ -5,7 +5,7 @@ namespace App\Database\Schema;
 use App\Exception\Exception;
 
 /**
- * Schema
+ * Schema.
  *
  * A database schema is just a list of columns and fields, with behaviors
  */
@@ -52,4 +52,4 @@ class Schema
     {
         return $this->tables;
     }
-} 
+}

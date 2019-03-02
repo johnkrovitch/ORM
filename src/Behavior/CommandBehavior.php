@@ -16,4 +16,4 @@ trait CommandBehavior
      * @var Container
      */
     protected $container;
-} 
+}

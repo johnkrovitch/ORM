@@ -4,7 +4,6 @@ namespace App\Command;
 
 use App\Behavior\CommandBehavior;
 use App\Database\Connection\Database;
-use App\Database\QueryBuilder\DatabaseQueryBuilder;
 use App\Database\Schema\Schema;
 use App\Manager\DatabaseManager;
 use App\Manager\DriverManager;
@@ -13,7 +12,6 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-
 
 class SyncCommand extends ContainerAwareCommand
 {
@@ -45,26 +43,16 @@ class SyncCommand extends ContainerAwareCommand
         $databaseManager = $this->container->get(DatabaseManager::class);
         $databaseManager->load();
 
-
-
-
         /** @var Database $database */
         $database = $databaseManager->get('main');
         $schemaManager->load($database);
 
-
-
         //dump($result->fetchAll());
-
-
-
 
         die;
 
-
         $schemaManager = $this->container->get(SchemaManager::class);
         $schemaManager->load();
-
 
         $sourceManager = $this->container->get(SourceManager::class);
         $driverManager = $this->container->get(DriverManager::class);
@@ -95,7 +83,7 @@ class SyncCommand extends ContainerAwareCommand
     }
 
     /**
-     * Return data for database connection from parameters.yml
+     * Return data for database connection from parameters.yml.
      *
      * @return array
      */
@@ -116,8 +104,8 @@ class SyncCommand extends ContainerAwareCommand
                 'name' => $name,
                 'login' => $login,
                 'password' => $password,
-                'port' => $port
-            ]
+                'port' => $port,
+            ],
         ];
     }
-} 
+}

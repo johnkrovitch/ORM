@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Behavior;
-
 
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -14,7 +12,8 @@ trait EventDispatcher
     protected $eventDispatcher;
 
     /**
-     * Return the EventDispatcher
+     * Return the EventDispatcher.
+     *
      * @return \Symfony\Component\EventDispatcher\EventDispatcher
      */
     public function getEventDispatcher()
@@ -26,4 +25,4 @@ trait EventDispatcher
     {
         $this->eventDispatcher = $eventDispatcher;
     }
-} 
+}

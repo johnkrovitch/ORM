@@ -44,4 +44,4 @@ class Query
     {
         return $this->parameters;
     }
-} 
+}

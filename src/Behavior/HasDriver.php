@@ -12,7 +12,7 @@ trait HasDriver
     protected $driver;
 
     /**
-     * Return current driver
+     * Return current driver.
      *
      * @return Driver
      */
@@ -22,7 +22,7 @@ trait HasDriver
     }
 
     /**
-     * Set current driver
+     * Set current driver.
      *
      * @param Driver $driver
      */
@@ -30,4 +30,4 @@ trait HasDriver
     {
         $this->driver = $driver;
     }
-} 
+}

@@ -9,10 +9,11 @@ use App\Database\Schema\Table;
 class SchemaComparator
 {
     /**
-     * Return a differential between two schemas
+     * Return a differential between two schemas.
      *
      * @param Schema $origin
      * @param Schema $destination
+     *
      * @return Differential
      */
     public function compare(Schema $origin, Schema $destination)
@@ -42,6 +43,7 @@ class SchemaComparator
         }
         //var_dump($destinationTables);
         die('lol');
+
         return;
     }
 
@@ -63,4 +65,4 @@ class SchemaComparator
 
         die('TODO compare columns');
     }
-} 
+}

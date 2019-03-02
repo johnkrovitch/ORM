@@ -20,18 +20,20 @@ class YmlTranslator implements Translator
      *  'panda' => [
      *     'bamboo'
      *     ]
-     * ] will be read $yaml['panda'][bamboo'] in yml driver
+     * ] will be read $yaml['panda'][bamboo'] in yml driver.
      *
      * @param Query $query
+     *
      * @return array
+     *
      * @throws Exception
      */
     public function translate(Query $query)
     {
-        if ($query->getType() == Constants::QUERY_TYPE_DESCRIBE) {
+        if (Constants::QUERY_TYPE_DESCRIBE == $query->getType()) {
             $translation = $this->translateDescribe();
         } else {
-            throw new Exception($query->getType() . ' query type is not allowed yet for yml translator');
+            throw new Exception($query->getType().' query type is not allowed yet for yml translator');
         }
         $query->setTranslatedQuery($translation);
 
@@ -39,10 +41,12 @@ class YmlTranslator implements Translator
     }
 
     /**
-     * Translate a RawResult from driver into a QueryResult
+     * Translate a RawResult from driver into a QueryResult.
      *
      * @param RawResult $rawResult
+     *
      * @return YmlQueryResult|mixed
+     *
      * @throws Exception
      */
     public function reverseTranslate(RawResult $rawResult)
@@ -54,7 +58,6 @@ class YmlTranslator implements Translator
         $rawData = $rawResult->getData();
         $keys = $rawResult->getQuery()->getTranslatedQuery();
 
-
         $result = new YmlQueryResult();
         $result->setQuery($rawResult->getQuery());
         $result->setResults($rawData);
@@ -62,10 +65,9 @@ class YmlTranslator implements Translator
         return $result;
     }
 
-
     protected function translateDescribe()
     {
         return [
         ];
     }
-} 
+}

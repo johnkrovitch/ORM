@@ -51,13 +51,8 @@ class EntityManager implements EntityManagerInterface
 
         if ($this->isManaged($entity)) {
             // Entity is managed, it should be updated
-
         } else {
-
         }
-
-
-
     }
 
     public function commit(): void

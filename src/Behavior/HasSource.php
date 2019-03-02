@@ -2,7 +2,6 @@
 
 namespace App\Behavior;
 
-use App\Database\Connection\Driver;
 use App\Database\Connection\SourceInterface;
 
 trait HasSource
@@ -13,7 +12,7 @@ trait HasSource
     protected $source;
 
     /**
-     * Return current source
+     * Return current source.
      *
      * @return SourceInterface
      */
@@ -23,7 +22,7 @@ trait HasSource
     }
 
     /**
-     * Set current source
+     * Set current source.
      *
      * @param SourceInterface $source
      */
@@ -31,4 +30,4 @@ trait HasSource
     {
         $this->source = $source;
     }
-} 
+}

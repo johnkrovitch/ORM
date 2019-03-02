@@ -15,4 +15,4 @@ trait Unique
     {
         $this->unique = $unique;
     }
-} 
+}

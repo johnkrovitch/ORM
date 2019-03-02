@@ -2,7 +2,6 @@
 
 namespace App\Behavior;
 
-use App\Database\Connection\Driver;
 use Monolog\Logger;
 
 trait HasLogger
@@ -13,7 +12,7 @@ trait HasLogger
     protected $logger;
 
     /**
-     * Return current logger
+     * Return current logger.
      *
      * @return Logger
      */
@@ -23,7 +22,7 @@ trait HasLogger
     }
 
     /**
-     * Set current logger
+     * Set current logger.
      *
      * @param Logger $logger
      */
@@ -31,4 +30,4 @@ trait HasLogger
     {
         $this->logger = $logger;
     }
-} 
+}

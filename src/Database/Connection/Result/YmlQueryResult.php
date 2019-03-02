@@ -21,23 +21,25 @@ class YmlQueryResult extends BaseQueryResult
     }
 
     /**
-     * Return results from query
+     * Return results from query.
      *
      * @param $hydrationMode
+     *
      * @return array
      */
     public function getResults($hydrationMode)
     {
         $results = $this->yamlResult;
 
-        if ($hydrationMode == Constants::FETCH_TYPE_OBJECT) {
-            $results = (Object)$results;
+        if (Constants::FETCH_TYPE_OBJECT == $hydrationMode) {
+            $results = (object) $results;
         }
+
         return $results;
     }
 
     /**
-     * Return affected rows count
+     * Return affected rows count.
      *
      * @return int
      */
@@ -47,7 +49,7 @@ class YmlQueryResult extends BaseQueryResult
     }
 
     /**
-     * Return true if last query return an error
+     * Return true if last query return an error.
      *
      * @return bool
      */
@@ -57,7 +59,7 @@ class YmlQueryResult extends BaseQueryResult
     }
 
     /**
-     * Return last query errors if there are
+     * Return last query errors if there are.
      *
      * @return mixed
      */
@@ -67,11 +69,13 @@ class YmlQueryResult extends BaseQueryResult
     }
 
     /**
-     * Find data into yaml content
+     * Find data into yaml content.
      *
      * @param $yaml
      * @param array $keys
+     *
      * @return array
+     *
      * @throws Exception
      */
     protected function findData($yaml, array $keys)
@@ -83,7 +87,7 @@ class YmlQueryResult extends BaseQueryResult
             foreach ($keys as $key => $value) {
                 if (is_array($value)) {
                     $data = $this->findData($yaml, $keys[$key]);
-                } else if (array_key_exists($key, $yaml)) {
+                } elseif (array_key_exists($key, $yaml)) {
                     $data[$key] = $value;
                 }
             }
@@ -94,6 +98,7 @@ class YmlQueryResult extends BaseQueryResult
             // if nothing is provided, we get all yaml content
             $data = $yaml['tables'];
         }
+
         return $data;
     }
 }

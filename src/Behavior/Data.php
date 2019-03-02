@@ -21,4 +21,4 @@ trait Data
     {
         $this->data = $data;
     }
-} 
+}

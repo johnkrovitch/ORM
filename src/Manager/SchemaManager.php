@@ -22,7 +22,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Yaml\Yaml;
 
 /**
- * SchemaLoader
+ * SchemaLoader.
  *
  * Transforms data from sources into orm Tables, then manipulates schema to create/update database
  */
@@ -50,7 +50,6 @@ class SchemaManager
         $this->kernelProjectDirectory = $kernelProjectDirectory;
     }
 
-
     public function load(Database $database)
     {
         $schema = new Schema();
@@ -69,7 +68,6 @@ class SchemaManager
 
         dump($yamlSchema);
 
-
         return $schema;
     }
 
@@ -81,7 +79,6 @@ class SchemaManager
             $tableExists = false;
 
             foreach ($destination->getTables() as $destinationTable) {
-
                 // TODO compare collation too
                 if ($destinationTable->getName() === $originTable->getName()) {
                     $tableExists = true;
@@ -94,7 +91,6 @@ class SchemaManager
                 $destinationTable = $destination->getTable($originTable->getName());
 
                 foreach ($originTable->getColumns() as $originColumn) {
-
                     if (!$destinationTable->hasColumn($originColumn->getName())) {
                         $diff->addColumn($originTable->getName(), $originColumn);
                     } else {
@@ -103,10 +99,7 @@ class SchemaManager
 
                         $diff->addColumnDiffs($originColumn->getName(), $columnDiff);
                     }
-
-
                 }
-
             }
         }
     }
@@ -120,7 +113,6 @@ class SchemaManager
     private function loadYamlSchema(Schema $schema, array $yaml)
     {
         foreach ($yaml['entities'] as $class => $configuration) {
-
             if (!class_exists($class)) {
                 throw new Exception('Class "'.$class.'" not found');
             }
@@ -149,7 +141,6 @@ class SchemaManager
 
     private function compareColumn(Column $origin, Column $destination)
     {
-        
     }
 
     protected function convertOptionsToBehavior($name, array $options): array
@@ -189,7 +180,7 @@ class SchemaManager
 
             foreach ($tableData as $columnName => $columnsData) {
                 // class behaviors
-                if ($columnName == 'behaviors') {
+                if ('behaviors' == $columnName) {
                     foreach ($columnsData as $behavior) {
                         $table->addBehavior($behavior);
                     }
@@ -197,16 +188,16 @@ class SchemaManager
                     continue;
                 }
                 // guess id type if not exist
-                if ($columnName == 'id' and !array_key_exists('type', $columnsData)) {
+                if ('id' == $columnName and !array_key_exists('type', $columnsData)) {
                     $columnsData['type'] = 'id';
                 }
                 // type must exists
                 if (!array_key_exists('type', $columnsData)) {
-                    throw new Exception('Column type is null for column: "' . $columnName . '"');
+                    throw new Exception('Column type is null for column: "'.$columnName.'"');
                 }
                 // set type if allowed{}
                 if (!in_array($columnsData['type'], $allowedColumnsTypes)) {
-                    throw new Exception('Invalid column type: "' . $columnsData['type'] . '", name : ' . $columnName);
+                    throw new Exception('Invalid column type: "'.$columnsData['type'].'", name : '.$columnName);
                 }
                 // creating new column
                 $column = new Column();
@@ -220,7 +211,7 @@ class SchemaManager
                     }
                 }
                 // if column is nullable
-                if (array_key_exists('nullable', $columnsData) and $columnsData['nullable'] === false) {
+                if (array_key_exists('nullable', $columnsData) and false === $columnsData['nullable']) {
                     $column->setNullable(false);
                 }
                 $table->addColumn($column);
@@ -234,7 +225,7 @@ class SchemaManager
     }
 
     /**
-     * Synchronize schema with database
+     * Synchronize schema with database.
      *
      * @throws Exception
      */
@@ -282,9 +273,10 @@ class SchemaManager
 
     /**
      * Check data integrity before loading schema. Ensures that data are valid before the schema is loaded.
-     * After calling this method, no more checks are required
+     * After calling this method, no more checks are required.
      *
      * @param $data
+     *
      * @throws \Exception
      */
     protected function checkData($data)
@@ -293,11 +285,11 @@ class SchemaManager
         if (is_array($data)) {
             // array data (generally data from files)
             if (is_array($data) and !array_key_exists('tables', $data)) {
-                throw new Exception('Expecting "tables" root node, got ' . "\n" . print_r($data, true));
+                throw new Exception('Expecting "tables" root node, got '."\n".print_r($data, true));
             }
         } else {
             //throw new Exception('Trying to load empty or in valid data. expected: array, got: ' . "\n" . print_r($data, true));
         }
         // TODO check data integrity
     }
-} 
+}

@@ -2,7 +2,6 @@
 
 namespace App\Behavior;
 
-use App\Database\Connection\Driver;
 use Symfony\Component\DependencyInjection\Container;
 
 trait HasContainer
@@ -13,7 +12,7 @@ trait HasContainer
     protected $container;
 
     /**
-     * Return current container
+     * Return current container.
      *
      * @return Container container
      */
@@ -23,7 +22,7 @@ trait HasContainer
     }
 
     /**
-     * Set current container
+     * Set current container.
      *
      * @param Container $container
      */
@@ -31,4 +30,4 @@ trait HasContainer
     {
         $this->container = $container;
     }
-} 
+}

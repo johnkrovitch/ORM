@@ -99,4 +99,4 @@ class Column
     {
         return $this->options['nullable'];
     }
-} 
+}

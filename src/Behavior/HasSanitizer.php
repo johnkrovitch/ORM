@@ -26,4 +26,4 @@ trait HasSanitizer
     {
         $this->sanitizer = $sanitizer;
     }
-} 
+}

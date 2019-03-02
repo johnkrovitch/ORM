@@ -26,4 +26,4 @@ trait Behaviors
     {
         $this->behaviors[] = $behavior;
     }
-} 
+}

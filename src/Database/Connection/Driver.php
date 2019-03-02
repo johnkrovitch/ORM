@@ -4,7 +4,6 @@ namespace App\Database\Connection;
 
 use App\Database\Command;
 use App\Database\Query;
-use App\Database\QueryResult;
 use App\Database\Result\Result;
 
 interface Driver
@@ -15,14 +14,14 @@ interface Driver
     public function getName(): string;
 
     /**
-     * Connect source
+     * Connect source.
      *
      * @param string $dsn
      */
     public function connect(string $dsn);
 
     /**
-     * Read data from source
+     * Read data from source.
      *
      * @param Query $query
      *

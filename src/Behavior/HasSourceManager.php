@@ -26,4 +26,4 @@ trait HasSourceManager
     {
         return $this->sourceManager;
     }
-} 
+}

@@ -63,31 +63,33 @@ class MysqlTranslator implements TranslatorInterface
             $sql .= str_replace(':database_name', $name, $template);
 
             //$this->parameters[':database_name_'.$index] = $name;
-            $index++;
+            ++$index;
         }
 
         return $sql;
     }
 
     /**
-     * Translate $query into mysql sanitized query string
+     * Translate $query into mysql sanitized query string.
      *
      * @param Query $query
+     *
      * @return mixed
+     *
      * @throws Exception
      */
     public function translateQuery(Query $query): TranslatedQuery
     {
-        if ($query->getType() == Constants::QUERY_TYPE_SHOW) {
+        if (Constants::QUERY_TYPE_SHOW == $query->getType()) {
             $translatedQuery = $this->translateShow($query);
-        } else if ($query->getType() == Constants::QUERY_TYPE_USE) {
+        } elseif (Constants::QUERY_TYPE_USE == $query->getType()) {
             $translatedQuery = $this->translateUse($query);
-        } else if ($query->getType() == Constants::QUERY_TYPE_CREATE) {
+        } elseif (Constants::QUERY_TYPE_CREATE == $query->getType()) {
             $translatedQuery = $this->translateCreate($query);
-        } else if ($query->getType() == Constants::QUERY_TYPE_DESCRIBE) {
+        } elseif (Constants::QUERY_TYPE_DESCRIBE == $query->getType()) {
             $translatedQuery = $this->translateDescribe($query);
         } else {
-            throw new Exception($query->getType() . ' query type is not allowed for mysql translator');
+            throw new Exception($query->getType().' query type is not allowed for mysql translator');
         }
 
         return $translatedQuery;
@@ -120,23 +122,23 @@ class MysqlTranslator implements TranslatorInterface
 
     protected function translateCreate(Query $query)
     {
-        if ($query->getParameter('type') == 'DATABASE') {
+        if ('DATABASE' == $query->getParameter('type')) {
             // CREATE DATABASE
             $templateQuery = 'CREATE %parameter1% IF NOT EXISTS %parameter2%;';
-        } else if ($query->getParameter('type') == 'TABLE') {
+        } elseif ('TABLE' == $query->getParameter('type')) {
             // CREATE TABLE
             $table = $query->getParameter('value');
 
             if (!($table instanceof Table)) {
                 $table = is_object($table) ? get_class($table) : gettype($table);
-                throw new Exception('Parameter "value" should be an instance of Table, ' . $table . ' given');
+                throw new Exception('Parameter "value" should be an instance of Table, '.$table.' given');
             }
             $templateQuery = 'CREATE %parameter1% IF NOT EXISTS %parameter2% (';
-            $templateQuery .= $this->getTableDefinition($table->getColumns()) . ');';
+            $templateQuery .= $this->getTableDefinition($table->getColumns()).');';
             // we transform Table object into string in query parameters
             $query->setParameter('value', $table->getName());
         } else {
-            throw new Exception('Mysql create of type ' . $query->getParameter('type') . ' is not allowed');
+            throw new Exception('Mysql create of type '.$query->getParameter('type').' is not allowed');
         }
         $mysqlQuery = $this->injectParameters($templateQuery, $query->getParameters());
 
@@ -163,11 +165,13 @@ class MysqlTranslator implements TranslatorInterface
     }
 
     /**
-     * Inject parameter into a query string with formatted strings
+     * Inject parameter into a query string with formatted strings.
      *
      * @param $queryString
      * @param array $parameters
+     *
      * @return mixed
+     *
      * @throws \Exception
      */
     protected function injectParameters($queryString, array $parameters)
@@ -181,14 +185,14 @@ class MysqlTranslator implements TranslatorInterface
         }
         // loop through query template parameters
         foreach ($queryParameters as $index => $parameter) {
-
             if (!count($parameters)) {
-                throw new Exception('Missing parameter ' . $index . ' for query ' . $queryString);
+                throw new Exception('Missing parameter '.$index.' for query '.$queryString);
             }
             $replace = array_shift($parameters);
             $replace = $this->getSanitizer()->sanitize($replace);
-            $queryString = str_replace('%parameter' . ($index + 1) . '%', $replace, $queryString);
+            $queryString = str_replace('%parameter'.($index + 1).'%', $replace, $queryString);
         }
+
         return $queryString;
     }
 
@@ -198,22 +202,21 @@ class MysqlTranslator implements TranslatorInterface
         $numberOfColumns = count($columns);
         $idColumns = [];
 
-
         /** @var Column $column */
         foreach ($columns as $index => $column) {
             $definition .= $this->getSanitizer()->sanitize($column->getName());
 
-            if ($column->getType() == Constants::COLUMN_TYPE_ID) {
+            if (Constants::COLUMN_TYPE_ID == $column->getType()) {
                 $definition .= ' INT NOT NULL AUTO_INCREMENT PRIMARY KEY';
                 $ids[] = $column;
-            } else if ($column->getType() == Constants::COLUMN_TYPE_INTEGER) {
+            } elseif (Constants::COLUMN_TYPE_INTEGER == $column->getType()) {
                 $definition .= ' INT ';
-            } else if ($column->getType() == Constants::COLUMN_TYPE_STRING) {
+            } elseif (Constants::COLUMN_TYPE_STRING == $column->getType()) {
                 $definition .= ' VARCHAR (255) ';
-            } else if ($column->getType() == Constants::COLUMN_TYPE_TEXT) {
+            } elseif (Constants::COLUMN_TYPE_TEXT == $column->getType()) {
                 $definition .= ' TEXT ';
             } else {
-                throw new Exception('Column type translation is not handled for type :' . $column->getType());
+                throw new Exception('Column type translation is not handled for type :'.$column->getType());
             }
             if (!$column->isNullable()) {
                 $definition .= ' NOT NULL ';
@@ -227,11 +230,12 @@ class MysqlTranslator implements TranslatorInterface
             $definition .= ' PRIMARY KEY (';
 
             foreach ($idColumns as $column) {
-                $definition .= $column->getName() . ',';
+                $definition .= $column->getName().',';
             }
             $definition = substr($definition, 0, strlen($definition) - 1);
             $definition .= ')';
         }
+
         return $definition;
     }
 
@@ -242,4 +246,4 @@ class MysqlTranslator implements TranslatorInterface
     {
         return $this->parameters;
     }
-} 
+}

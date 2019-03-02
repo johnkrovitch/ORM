@@ -7,24 +7,26 @@ use Exception;
 class QueryBuilder
 {
     /**
-     * Main query
+     * Main query.
      *
      * @var Query
      */
     protected $query;
 
     /**
-     * Other queries. They will be executed after main query
+     * Other queries. They will be executed after main query.
      *
      * @var array
      */
     protected $followingQueries = [];
 
     /**
-     * Show elements from data source
+     * Show elements from data source.
      *
      * @param $type
+     *
      * @return $this
+     *
      * @throws Exception
      */
     public function show($type)
@@ -37,10 +39,11 @@ class QueryBuilder
     }
 
     /**
-     * Create data source
+     * Create data source.
      *
      * @param $type string creation type (DATABASE, TABLE...)
      * @param $value
+     *
      * @return $this
      */
     public function create($type, $value)
@@ -54,11 +57,13 @@ class QueryBuilder
     }
 
     /**
-     * Add a parameter into collection
+     * Add a parameter into collection.
      *
      * @param $name
      * @param $value
+     *
      * @return $this
+     *
      * @throws Exception
      */
     public function addParameter($name, $value)

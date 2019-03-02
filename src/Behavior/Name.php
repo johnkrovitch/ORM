@@ -2,8 +2,6 @@
 
 namespace App\Behavior;
 
-use App\Database\Connection\Driver;
-
 trait Name
 {
     /**
@@ -12,7 +10,7 @@ trait Name
     protected $name;
 
     /**
-     * Return current name
+     * Return current name.
      *
      * @return string
      */
@@ -22,7 +20,7 @@ trait Name
     }
 
     /**
-     * Set current name
+     * Set current name.
      *
      * @param string $name
      */
@@ -30,4 +28,4 @@ trait Name
     {
         $this->name = $name;
     }
-} 
+}

@@ -26,4 +26,4 @@ trait HasTranslator
     {
         $this->translator = $translator;
     }
-} 
+}

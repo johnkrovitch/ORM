@@ -13,4 +13,4 @@ class SchemaEvent extends Event
     {
         $this->schema = $schema;
     }
-} 
+}

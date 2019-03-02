@@ -11,7 +11,7 @@ class HashHelper
     /**
      * Create an hash for the given entity, according ot the primary keys values.
      *
-     * @param object   $entity The entity to get a hash from
+     * @param object   $entity   The entity to get a hash from
      * @param Metadata $metadata The metadata associated to the entity
      *
      * @return string

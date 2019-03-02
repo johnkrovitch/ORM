@@ -23,4 +23,4 @@ trait HasSchemaComparator
     {
         $this->schemaComparator = $schemaComparator;
     }
-} 
+}

@@ -26,4 +26,4 @@ trait HasQuery
     {
         $this->query = $query;
     }
-} 
+}

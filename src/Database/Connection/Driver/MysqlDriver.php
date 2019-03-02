@@ -67,7 +67,7 @@ class MysqlDriver extends AbstractDriver
         }
         $success = $statement->execute();
 
-        if (true !== $success && $statement->errorCode() !== self::RETURN_CODE_SUCCESS) {
+        if (true !== $success && self::RETURN_CODE_SUCCESS !== $statement->errorCode()) {
             $message = vsprintf('An error has occurred when executing a command. Error code: "%s", Error message: "%s"', [
                 $statement->errorCode(),
                 $statement->errorInfo(),
@@ -91,7 +91,7 @@ class MysqlDriver extends AbstractDriver
         }
         $success = $statement->execute();
 
-        if (true !== $success && $statement->errorCode() !== self::RETURN_CODE_SUCCESS) {
+        if (true !== $success && self::RETURN_CODE_SUCCESS !== $statement->errorCode()) {
             $message = vsprintf('An error has occurred when executing a command. Error code: "%s", Error message: "%s"', [
                 $statement->errorCode(),
                 $statement->errorInfo()[2],
@@ -106,7 +106,7 @@ class MysqlDriver extends AbstractDriver
     {
         // check if source is valid
         if (!($source instanceof MysqlSourceInterface)) {
-            throw new Exception('Invalid mysql source' . var_dump($source, true));
+            throw new Exception('Invalid mysql source'.var_dump($source, true));
         }
         $this->source = $source;
     }
@@ -117,7 +117,7 @@ class MysqlDriver extends AbstractDriver
     }
 
     /**
-     * Return driver source type
+     * Return driver source type.
      *
      * @return mixed
      */
@@ -133,15 +133,15 @@ class MysqlDriver extends AbstractDriver
         // TODO handle boolean result (in case of CREATE for example)
         // TODO add a try catch
         // TODO only log in dev mode
-        $this->getLogger()->info('>>> ORM query : ' . $translatedQuery);
+        $this->getLogger()->info('>>> ORM query : '.$translatedQuery);
         // pdo mysql query
         /** @var PDOStatement $pdoStatement */
         $pdoStatement = $this->pdo->query($translatedQuery);
         $query->setExecuted(true);
 
-        if ($pdoStatement->errorCode() != self::RETURN_CODE_SUCCESS) {
-            $message = 'An error has occurred in query "' . $translatedQuery . '". ' . implode($this->pdo->errorInfo(), "\n");
-            $this->getLogger()->error('>>> ORM ERROR query : ' . $translatedQuery . ', mysql code : ' . $pdoStatement->errorCode());
+        if (self::RETURN_CODE_SUCCESS != $pdoStatement->errorCode()) {
+            $message = 'An error has occurred in query "'.$translatedQuery.'". '.implode($this->pdo->errorInfo(), "\n");
+            $this->getLogger()->error('>>> ORM ERROR query : '.$translatedQuery.', mysql code : '.$pdoStatement->errorCode());
 
             throw new Exception($message);
         }
@@ -191,7 +191,7 @@ class MysqlDriver extends AbstractDriver
      */
     protected function buildContext(string $dsn)
     {
-        if (substr($dsn, 0, 8) !== 'mysql://') {
+        if ('mysql://' !== substr($dsn, 0, 8)) {
             throw new Exception('The dsn string should begin by mysql://');
         }
         if (false === strstr($dsn, '@')) {
@@ -224,7 +224,7 @@ class MysqlDriver extends AbstractDriver
 
     protected function checkConnection()
     {
-        if (null  === $this->connection) {
+        if (null === $this->connection) {
             throw new Exception('The driver should be connected to query the database');
         }
     }

@@ -6,7 +6,7 @@ use App\Behavior\Data;
 use App\Behavior\HasQuery;
 
 /**
- * RawResult
+ * RawResult.
  *
  * Raw result from a data source
  */
@@ -31,4 +31,4 @@ class RawResult
     {
         $this->rawResults = $rawResult;
     }
-} 
+}

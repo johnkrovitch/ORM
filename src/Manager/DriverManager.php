@@ -18,7 +18,6 @@ class DriverManager
     public function load(Database $database)
     {
         foreach ($this->drivers as $driver) {
-
             if ($database->getDriverName() === $driver->getName()) {
                 $driver->connect($database->getDsn());
                 $database->setDriver($driver);

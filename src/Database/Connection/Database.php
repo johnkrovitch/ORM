@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Database\Connection;
-
 
 use App\Exception\Exception;
 

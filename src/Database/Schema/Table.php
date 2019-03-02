@@ -38,4 +38,4 @@ class Table
     {
         return key_exists($name, $this->columns);
     }
-} 
+}

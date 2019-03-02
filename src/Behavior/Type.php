@@ -2,8 +2,6 @@
 
 namespace App\Behavior;
 
-use App\Database\Connection\Driver;
-
 trait Type
 {
     /**
@@ -12,7 +10,7 @@ trait Type
     protected $type;
 
     /**
-     * Return current type
+     * Return current type.
      *
      * @return string
      */
@@ -22,7 +20,7 @@ trait Type
     }
 
     /**
-     * Set current type
+     * Set current type.
      *
      * @param string $type
      */
@@ -30,4 +28,4 @@ trait Type
     {
         $this->type = $type;
     }
-} 
+}

@@ -27,15 +27,16 @@ trait Parameters
     public function getParameter($name)
     {
         if (!array_key_exists($name, $this->parameters)) {
-            throw new Exception('Parameter ' . $name . ' not found');
+            throw new Exception('Parameter '.$name.' not found');
         }
+
         return $this->parameters[$name];
     }
 
     public function setParameter($name, $value)
     {
         if (!array_key_exists($name, $this->parameters)) {
-            throw new Exception('Parameter ' . $name . ' not exist, you should add the parameter first');
+            throw new Exception('Parameter '.$name.' not exist, you should add the parameter first');
         }
         $this->parameters[$name] = $value;
     }
@@ -43,10 +44,8 @@ trait Parameters
     public function addParameter($name, $value)
     {
         if (array_key_exists($name, $this->parameters)) {
-            throw new Exception('Parameter ' . $name . ' already added to Query');
+            throw new Exception('Parameter '.$name.' already added to Query');
         }
         $this->parameters[$name] = $value;
     }
-
-
-} 
+}

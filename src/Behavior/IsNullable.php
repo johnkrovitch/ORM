@@ -2,17 +2,15 @@
 
 namespace App\Behavior;
 
-use App\Database\Connection\Driver;
-
 trait IsNullable
 {
     /**
-     * @var boolean
+     * @var bool
      */
     protected $isNullable = true;
 
     /**
-     * Return current type
+     * Return current type.
      *
      * @return string
      */
@@ -22,7 +20,7 @@ trait IsNullable
     }
 
     /**
-     * Set current type
+     * Set current type.
      *
      * @param $isNullable
      */
@@ -30,4 +28,4 @@ trait IsNullable
     {
         $this->isNullable = $isNullable;
     }
-} 
+}

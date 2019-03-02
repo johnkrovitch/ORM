@@ -23,4 +23,4 @@ trait HasSchema
     {
         $this->schema = $schema;
     }
-} 
+}
